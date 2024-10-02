@@ -1,0 +1,6 @@
+@Cundi_incidencias_HostAddress = http://localhost:5287
+
+GET {{Cundi_incidencias_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
