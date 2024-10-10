@@ -29,6 +29,29 @@ namespace Cundi_incidencias.Controllers
                 return StatusCode(500, "ERROR: " + ex.Message);
             }
         }
+
+        [HttpGet("ObtenerHistorialIncidencia")]
+        public async Task<IActionResult> ObtenerHistorialIncidencia()
+        {
+            try
+            {
+                var incidencia = await _incidenciaService.ObtenerHistorialIncidencia();
+
+                if (incidencia == null)
+                {
+                    return NotFound(new { message = "NO SE HAN ENCONTRADO REGISTROS" });
+                }
+                return Ok(new
+                {
+                    incidencia
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "ERROR: " + ex.Message);
+            }
+        }
+
         [HttpPost("ActualizarInci")]
         public async Task<IActionResult> ActualizarInci([FromForm] string nombre_incidencia, [FromForm] string imagen, [FromForm] int id_categoria, [FromForm] int id_ubicacion)
         {
