@@ -22,13 +22,6 @@ namespace Cundi_incidencias.Services
             return incidencia;
 
         }
-
-        public async Task<List<IncidenciaDto>> ObtenerHistorialIncidencia()
-        {
-            var incidencia = await _incidenciaRepository.ObtenerHistorialIncidencia();
-            return incidencia;
-
-        }
         public async Task<int> ActualizarIncidencia(string nombre_incidencia, string imagen, int id_categoria, int id_ubicacion)
         {
             int filasactualizadas = 0;
