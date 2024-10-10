@@ -57,7 +57,8 @@ namespace Cundi_incidencias.Controllers
            }
        
     [HttpPost("Actualizar")]
-        public async Task<IActionResult> ActualizarUsuario([FromForm] string correo, [FromForm] string programa, [FromForm] string semestre, [FromForm] string direccion, [FromForm] string telefono)
+        public async Task<IActionResult> ActualizarUsuario([FromForm] string correo, [FromForm] string programa, 
+        [FromForm] string semestre, [FromForm] string direccion, [FromForm] string telefono)
         {
             try
             {
