@@ -6,6 +6,7 @@ using Cundi_incidencias.Utility;
 using Cundi_incidencias.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace Cundi_incidencias.Repository
@@ -21,11 +22,12 @@ namespace Cundi_incidencias.Repository
         public async Task<IncidenciaDto> CrearIncidencia(IncidenciaDto incidencia)
         {
 
-            string insertQuery = @"INSERT INTO incidencia ( nombre_incidencia, descripcion, imagen, fecha_inicio, fecha_fin, id_usuario, id_estado, id_categoria, id_ubicacion)     
-                           VALUES ( @nombre_incidencia, @descripcion, @imagen, @fecha_inicio, @fecha_fin, @id_usuario, @id_estado, @id_categoria, @id_ubicacion)";
+            string insertQuery = @"INSERT INTO incidencia ( nombre_incidencia, descripcion, imagen, fecha_inicio, fecha_fin, id_usuario, id_estado, id_categoria, id_ubicacion,fecha_creacion)     
+                           VALUES ( @nombre_incidencia, @descripcion, @imagen, @fecha_inicio, @fecha_fin, @id_usuario, @id_estado, @id_categoria, @id_ubicacion, @fecha_creacion)";
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
+                var fecha = DateTime.Now;
                 await con.OpenAsync();
                 using (SqlCommand programaCmd = new SqlCommand(insertQuery, con))
                 {
@@ -40,6 +42,7 @@ namespace Cundi_incidencias.Repository
                         cmd.Parameters.AddWithValue("@id_estado", incidencia.id_estado);
                         cmd.Parameters.AddWithValue("@id_categoria", incidencia.id_categoria);
                         cmd.Parameters.AddWithValue("@id_ubicacion", incidencia.id_ubicacion);
+                        cmd.Parameters.AddWithValue("@fecha_creacion", fecha);
 
                         await cmd.ExecuteNonQueryAsync();
                     }
@@ -50,29 +53,40 @@ namespace Cundi_incidencias.Repository
                 return incidencia;
             }
         }
-        public async Task<int> ActualizarIncidencia(string nombre_incidencia, string imagen, int id_categoria, int id_ubicacion)
+        public async Task<int> ActualizarIncidencia(IncidenciaDto incidencia)
         {
             int filasactualizadas = 0;
-            string query = @"UPDATE incidencia 
-                     SET imagen = @imagen, 
-                         id_categoria = @id_categoria, 
-                         id_ubicacion = @id_ubicacion,
-                     WHERE nombre_incidencia = @nombre_incidencia";
+
+            string updateQuery = @"UPDATE incidencia SET 
+                                   NOMBRE_INCIDENCIA = @nombre_incidencia, 
+                                   DESCRIPCION = @descripcion,
+                                   IMAGEN = @imagen,
+                                   FECHA_INICIO = @fecha_inicio,
+                                   FECHA_FIN = @fecha_fin, 
+                                   ID_ESTADO = @id_estado,
+                                   ID_CATEGORIA = @id_categoria,
+                                   ID_UBICACION = @id_ubicacion 
+                                   WHERE 
+                                   ID_INCIDENCIA = @id_incidencia 
+                                   AND DATEDIFF(MINUTE, FECHA_CREACION, GETDATE()) < 10";
             try
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand(updateQuery, con))
                     {
-                        cmd.Parameters.AddWithValue("@nombre_incidencia", nombre_incidencia);
-                        cmd.Parameters.AddWithValue("@imagen", imagen);
-                        cmd.Parameters.AddWithValue("@id_categoria", id_categoria);
-                        cmd.Parameters.AddWithValue("@id_ubicacion", id_ubicacion);
-
+                        cmd.Parameters.AddWithValue("@id_incidencia", incidencia.id_incidencia);
+                        cmd.Parameters.AddWithValue("@nombre_incidencia", incidencia.nombre_incidencia);
+                        cmd.Parameters.AddWithValue("@descripcion", incidencia.descripcion);
+                        cmd.Parameters.AddWithValue("@imagen", ConvertFileToBase64(@"C:\pexels-photo-1906795.jpeg")); //foto de prueba
+                        cmd.Parameters.AddWithValue("@fecha_inicio", incidencia.fecha_inicio);
+                        cmd.Parameters.AddWithValue("@fecha_fin", incidencia.fecha_fin);
+                        cmd.Parameters.AddWithValue("@id_estado", incidencia.id_estado);
+                        cmd.Parameters.AddWithValue("@id_categoria", incidencia.id_categoria);
+                        cmd.Parameters.AddWithValue("@id_ubicacion", incidencia.id_ubicacion);
                         filasactualizadas = await cmd.ExecuteNonQueryAsync();
                     }
-                    await con.CloseAsync();
                 }
             }
             catch (Exception ex)

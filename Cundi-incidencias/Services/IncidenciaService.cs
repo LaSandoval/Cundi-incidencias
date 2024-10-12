@@ -1,6 +1,7 @@
 ﻿using Cundi_incidencias.Dto;
 using Cundi_incidencias.Repository;
 using Cundi_incidencias.Utility;
+using Microsoft.AspNetCore.Mvc;
 using System.Text;
 
 
@@ -29,10 +30,9 @@ namespace Cundi_incidencias.Services
             return incidencia;
 
         }
-        public async Task<int> ActualizarIncidencia(string nombre_incidencia, string imagen, int id_categoria, int id_ubicacion)
+        public async Task<int> ActualizarIncidencia([FromBody] IncidenciaDto incidencia)
         {
-            int filasactualizadas = 0;
-            filasactualizadas = await _incidenciaRepository.ActualizarIncidencia(nombre_incidencia, imagen, id_categoria, id_ubicacion);
+           int filasactualizadas = await _incidenciaRepository.ActualizarIncidencia(incidencia);
             return filasactualizadas;
         }
     }

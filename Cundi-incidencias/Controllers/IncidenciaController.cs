@@ -53,12 +53,20 @@ namespace Cundi_incidencias.Controllers
         }
 
         [HttpPost("ActualizarInci")]
-        public async Task<IActionResult> ActualizarInci([FromForm] string nombre_incidencia, [FromForm] string imagen, [FromForm] int id_categoria, [FromForm] int id_ubicacion)
+        public async Task<IActionResult> ActualizarInci([FromBody] IncidenciaDto incidencia)
         {
             try
             {
-                await _incidenciaService.ActualizarIncidencia(nombre_incidencia, imagen, id_categoria, id_ubicacion);
-                return Ok(new { mensaje = "INCIDENCIA ACTUALIZADA EXITOSAMENTE" });
+               var incidenciaRespuesta = await _incidenciaService.ActualizarIncidencia(incidencia);
+                if (incidenciaRespuesta.Equals(1))
+                {
+                    return Ok(new { mensaje = "INCIDENCIA ACTUALIZADA EXITOSAMENTE" });
+                }
+                else
+                {
+                    return StatusCode(401);
+                }
+                
             }
             catch (Exception ex)
             {
