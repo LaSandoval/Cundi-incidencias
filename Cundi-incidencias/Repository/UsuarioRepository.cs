@@ -220,6 +220,24 @@ namespace Cundi_incidencias.Repository
 
             return filasEliminadas;
         }
+        public async Task ActualizarContrasena(int idUsuario, string nuevaContrasena)
+        {
+            string query = @"UPDATE usuario SET contrasena = @nuevaContrasena WHERE id_usuario = @id_usuario";
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                await con.OpenAsync();
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@nuevaContrasena", nuevaContrasena);
+                    cmd.Parameters.AddWithValue("@id_usuario", idUsuario);
+
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                await con.CloseAsync() ;
+            }
+        }
+
 
 
     }
