@@ -6,6 +6,8 @@ using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton<EmailService>();
+builder.Services.AddScoped<IEmailService, EmailService>();  
 builder.Services.AddControllers();
 
 // Configuración de CORS
@@ -37,23 +39,18 @@ builder.Services.AddScoped<PersonaRepository>(provider =>
 });
 
 builder.Services.AddScoped<PersonaService>();
-
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<IncidenciaRepository>(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
     var connectionString = configuration.GetConnectionString("DefaultConnection");
-    return new IncidenciaRepository(connectionString);
+    var emailService = provider.GetRequiredService<EmailService>();
+    return new IncidenciaRepository(connectionString, emailService);
 });
 
 builder.Services.AddScoped<IncidenciaService>();
 
-
-
-
-
-
 // Registro del repositorio de recuperación de contraseña
-
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

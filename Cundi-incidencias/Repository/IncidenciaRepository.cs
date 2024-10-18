@@ -7,6 +7,7 @@ using Cundi_incidencias.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
 using static System.Net.Mime.MediaTypeNames;
+using Cundi_incidencias.Services;
 
 
 namespace Cundi_incidencias.Repository
@@ -14,17 +15,20 @@ namespace Cundi_incidencias.Repository
     public class IncidenciaRepository
     {
         private readonly string _connectionString;
-        public IncidenciaRepository(string connectionString)
+        private readonly IEmailService _iEmailService;
+        public IncidenciaRepository(string connectionString, IEmailService emailService)
         {
             _connectionString = connectionString;
+            _iEmailService = emailService;
         }
 
         public async Task<IncidenciaDto> CrearIncidencia(IncidenciaDto incidencia)
         {
+            string insertQuery = @"INSERT INTO incidencia (nombre_incidencia, descripcion, imagen, fecha_inicio, fecha_fin, id_usuario, id_estado, id_categoria, id_ubicacion, fecha_creacion)     
+                                    VALUES (@nombre_incidencia, @descripcion, @imagen, @fecha_inicio, @fecha_fin, @id_usuario, @id_estado, @id_categoria, @id_ubicacion, @fecha_creacion);
+                                    SELECT SCOPE_IDENTITY();";
 
-            string insertQuery = @"INSERT INTO incidencia ( nombre_incidencia, descripcion, imagen, fecha_inicio, fecha_fin, id_usuario, id_estado, id_categoria, id_ubicacion,fecha_creacion)     
-                           VALUES ( @nombre_incidencia, @descripcion, @imagen, @fecha_inicio, @fecha_fin, @id_usuario, @id_estado, @id_categoria, @id_ubicacion, @fecha_creacion)";
-
+            var idIncidencia = string.Empty;
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 var fecha = DateTime.Now;
@@ -44,10 +48,107 @@ namespace Cundi_incidencias.Repository
                         cmd.Parameters.AddWithValue("@id_ubicacion", incidencia.id_ubicacion);
                         cmd.Parameters.AddWithValue("@fecha_creacion", fecha);
 
-                        await cmd.ExecuteNonQueryAsync();
+                        object idGenerado = await cmd.ExecuteScalarAsync();
+                        idIncidencia = idGenerado.ToString();
                     }
 
-                    await con.CloseAsync();
+                    var emailDto = new EmailDto
+                    {
+                        Para = "vanessara2812@gmail.com", //aqui se le debe dar manejo al correo, por ejemplo
+                                                          //el correo del usuario que está en la sesion o similar
+                        Asunto = "Creacion de incidencia",
+                        Contenido = "<html>" +
+                                        "<head>" +
+                                        "<style>" +
+                                        "body {" +
+                                        "margin: 0;" +
+                                        "padding: 0;" +
+                                        "font-family: Arial, sans-serif;" +
+                                        "background-color: #ffffff;" +
+                                        "}" +
+                                        ".container {" +
+                                        "max-width: 30rem;" +
+                                        "margin: 0 auto;" +
+                                        "padding: 2rem;" +
+                                        "background-color: #ffffff;" +
+                                        "border-radius: 1rem;" +
+                                        "box-shadow: 0 0 2rem rgba(0, 128, 0, 0.2);" +
+                                        "color: #000000;" +
+                                        "}" +
+                                        ".header {" +
+                                        "text-align: center;" +
+                                        "background-color: #008000;" +
+                                        "padding: 1rem;" +
+                                        "border-top-left-radius: 1rem;" +
+                                        "border-top-right-radius: 1rem;" +
+                                        "color: #ffffff;" +
+                                        "}" +
+                                        ".logo {" +
+                                        "width: 80px;" +
+                                        "vertical-align: middle;" +
+                                        "margin-right: 0.5rem;" +
+                                        "}" +
+                                        ".header h1 {" +
+                                        "display: inline-block;" +
+                                        "vertical-align: middle;" +
+                                        "margin: 0;" +
+                                        "font-size: 1.5rem;" +
+                                        "}" +
+                                        ".content {" +
+                                        "padding: 1rem;" +
+                                        "background-color: #ffffff;" +
+                                        "border-radius: 1rem;" +
+                                        "box-shadow: 0 2px 5px rgba(0, 128, 0, 0.1);" +
+                                        "border: 1px solid #008000;" +
+                                        "}" +
+                                        ".content h2 {" +
+                                        "color: #008000;" +
+                                        "margin-bottom: 1.3rem;" +
+                                        "}" +
+                                        ".content p {" +
+                                        "color: #000000;" +
+                                        "font-size: 1rem;" +
+                                        "line-height: 1.6;" +
+                                        "}" +
+                                        ".footer {" +
+                                        "text-align: center;" +
+                                        "margin-top: 2rem;" +
+                                        "padding-top: 1rem;" +
+                                        "border-top: 1px solid #008000;" +
+                                        "}" +
+                                        ".footer p {" +
+                                        "color: #008000;" +
+                                        "font-size: 0.8rem;" +
+                                        "}" +
+                                        ".codigo {" +
+                                        "text-align: center;" +
+                                        "font-weight: bold;" +
+                                        "color: #008000;" +
+                                        "font-size: 1.2rem;" +
+                                        "}" +
+                                        "</style>" +
+                                        "</head>" +
+                                        "<body>" +
+                                        "<div class='container'>" +
+                                        "<div class='header'>" +
+                                        "<img src='https://i.ibb.co/f8ytCBW/Cundi.png' alt='Cundi-Incidencias' class='logo'/>" +
+                                        "<h1>Cundi-Incidencias</h1>" +
+                                        "</div>" +
+                                        "<div class='content'>" +
+                                        "<h2>¡Hola!</h2>" +
+                                        "<p>Se ha registrado una nueva incidencia</p>" +
+                                        "<p>A continuación, encontrarás el id</p>" +
+                                        "<p class='codigo'>" + idIncidencia + "</p>" +
+                                        "<p>Gracias por utilizar Cundi-Incidencias.</p>" +
+                                        "</div>" +
+                                        "<div class='footer'>" +
+                                        "<p>Este correo electrónico fue enviado por Cundi-Incidencias. Para cualquier consulta, escríbenos a cundiincidenciassoporte@gmail.com.</p>" +
+                                        "</div>" +
+                                        "</div>" +
+                                        "</body>" +
+                                        "</html>"
+                    };
+                    _iEmailService.EnviarEmail(emailDto);
                 }
 
                 return incidencia;
