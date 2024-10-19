@@ -15,7 +15,7 @@ namespace Cundi_incidencias.Repository
         public async Task<RecuperarContrasenaDto> Codigo(RecuperarContrasenaDto recuperarContrasena)
         {
             recuperarContrasena.fecha_solicitud = DateTime.Now;
-            recuperarContrasena.fecha_expiracion = recuperarContrasena.fecha_solicitud.AddHours(3);
+            recuperarContrasena.fecha_expiracion = recuperarContrasena.fecha_solicitud.AddMinutes(10);
 
             string insertQuery = @"INSERT INTO recuperar_contrasena ( id_usuario, token, fecha_solicitud, fecha_expiracion)     
                                    VALUES ( @id_usuario, @token, @fecha_solicitud, @fecha_expiracion)";
@@ -39,7 +39,7 @@ namespace Cundi_incidencias.Repository
 
             return recuperarContrasena;
         }
-        public async Task<RecuperarContrasenaDto> ObtenerRecuperacionPorUsuarioYToken(int idUsuario, string token)
+        public async Task<RecuperarContrasenaDto> ObtenerRecuperacionPorUsuarioYToken(int idUsuario, int token)
         {
             string query = @"SELECT id_usuario, token, fecha_solicitud, fecha_expiracion 
                      FROM recuperar_contrasena 
@@ -155,6 +155,32 @@ namespace Cundi_incidencias.Repository
             }
 
             return true; 
+        }
+        public async Task<int> EliminarToken(int id_usuario)
+        {
+            int filasEliminadas = 0;
+            string query = @"DELETE FROM recuperar_contrasena WHERE id_usuario = @id_usuario";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(_connectionString))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@id_usuario", id_usuario);
+
+                        filasEliminadas = await cmd.ExecuteNonQueryAsync();
+                    }
+                    await con.CloseAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al eliminar el token: " + ex.Message);
+            }
+
+            return filasEliminadas;
         }
 
     }

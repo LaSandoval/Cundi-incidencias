@@ -3,7 +3,7 @@
     public class EmpleadoDto
     {
         public PersonaDto persona { get; set; }
-        public string cargo { get; set; }
-        public string turno { get; set; }
+        public int id_cargo { get; set; }
+        public int id_turno { get; set; }
     }
 }

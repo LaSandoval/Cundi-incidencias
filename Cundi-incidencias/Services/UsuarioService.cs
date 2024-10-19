@@ -1,8 +1,10 @@
-﻿using Cundi_incidencias.Dto;
+﻿using Cundi_incidecnias.Utility;
+using Cundi_incidencias.Dto;
 using Cundi_incidencias.Repository;
 using Cundi_incidencias.Utility;
 
 using System.Text;
+using System.Xml.Linq;
 
 namespace Cundi_incidencias.Services
 
@@ -20,10 +22,23 @@ namespace Cundi_incidencias.Services
             UsuarioInDto usuario1=new UsuarioInDto();
             BycriptUtility bycriptUtility = new BycriptUtility();
             usuario.persona.contrasena = bycriptUtility.HashPassword(usuario.persona.contrasena);
-
+            CodigoRecuperacionUtility tokenU=new CodigoRecuperacionUtility();
+            usuario.persona.id_rol = 1;
+            int token = tokenU.NumeroAleatorio();
+            usuario.persona.token=token;
+            usuario.persona.id_estado = 2;
+            CorreoUtility correo=new CorreoUtility();
+            correo.enviarCorreoCuenta(usuario.persona.correo, token);
             usuario1= await _usuarioRepository.RegistroUsuario(usuario);
             return usuario;
 
+        }
+
+        public async Task<int> ActivarCuenta(int token)
+        {
+            int filaactualizada = 0;
+            filaactualizada = await _usuarioRepository.ActivarCuenta(token);
+            return filaactualizada;
         }
         public async Task<bool> BuscarPersona(string correo)
         {
@@ -36,8 +51,12 @@ namespace Cundi_incidencias.Services
             }
 
         }
-
-        public async Task<int> ActualizarUsuario(string correo, string programa, string semestre, string direccion, string telefono)
+        public async Task<UsuarioInDto> EnviarDatosUsu(int id_usuario)
+        {
+            UsuarioInDto usuario = await _usuarioRepository.SeleccionarUsuarioAsync(id_usuario);
+            return usuario;
+        }
+            public async Task<int> ActualizarUsuario(string correo, string programa, string semestre, string direccion, string telefono)
         {
             int filasactualizadas = 0;
             filasactualizadas = await _usuarioRepository.ActualizarUsuario (correo,programa, semestre, direccion, telefono);

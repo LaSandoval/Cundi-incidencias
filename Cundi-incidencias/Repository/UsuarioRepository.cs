@@ -18,8 +18,8 @@ namespace Cundi_incidencias.Repository
         public async Task<UsuarioInDto> RegistroUsuario(UsuarioInDto usuario)
         {
             usuario.persona.fecha_registro=DateTime.Now.Date;
-            string insertQuery = @"INSERT INTO usuario (id_rol, nombre_usuario, apellido_usuario, correo, contrasena, id_programa, id_semestre, direccion, fecha_registro, telefono)     
-                           VALUES (@id_rol, @nombre_usuario, @apellido_usuario, @correo, @contrasena, @id_programa, @id_semestre, @direccion, @fecha_registro,  @telefono)";
+            string insertQuery = @"INSERT INTO usuario (id_rol, nombre_usuario, apellido_usuario, correo, contrasena, id_programa, id_semestre, direccion, fecha_registro, telefono, token, id_estado)     
+                           VALUES (@id_rol, @nombre_usuario, @apellido_usuario, @correo, @contrasena, @id_programa, @id_semestre, @direccion, @fecha_registro,  @telefono, @token, @id_estado)";
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
@@ -38,6 +38,8 @@ namespace Cundi_incidencias.Repository
                         cmd.Parameters.AddWithValue("@direccion", usuario.persona.direccion);
                         cmd.Parameters.AddWithValue("@fecha_registro", usuario.persona.fecha_registro);
                         cmd.Parameters.AddWithValue("@telefono", usuario.persona.telefono);
+                        cmd.Parameters.AddWithValue("@id_estado", usuario.persona.id_estado);
+                        cmd.Parameters.AddWithValue("@token", usuario.persona.token ?? (object)DBNull.Value);
 
                         await cmd.ExecuteNonQueryAsync();
                     }
@@ -49,11 +51,31 @@ namespace Cundi_incidencias.Repository
             }
         }
 
+        public async Task<int> ActivarCuenta(int token)
+        {
+            int filaActualizada = 0;
+            string query = "UPDATE usuario SET id_estado=1 WHERE token=@token";
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                await con.OpenAsync();
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@token", token);
+
+                    filaActualizada = await cmd.ExecuteNonQueryAsync();
+                }
+                await con.CloseAsync();
+
+         return filaActualizada;
+            }
+        }
+
         public async Task<bool> BuscarPersona(string correo)
         {
             string query = "SELECT COUNT(*) FROM USUARIO WHERE correo = @correo";
             int personaEncontrado = 0;
-            using (SqlConnection con = new SqlConnection(_connectionString))
+                using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 await con.OpenAsync();
                 using (SqlCommand cmd = new SqlCommand(query, con))
@@ -73,6 +95,60 @@ namespace Cundi_incidencias.Repository
                 }
             }
         }
+
+        public async Task<UsuarioInDto> SeleccionarUsuarioAsync(int id_usuario)
+        {
+            UsuarioInDto usuario = null;
+            string query = @"SELECT  nombre_usuario, apellido_usuario, correo, contrasena, telefono, direccion, 
+                            id_rol, id_semestre, id_programa
+                     FROM usuario 
+                     WHERE id_usuario = @id_usuario";
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(_connectionString))
+                {
+                    await con.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@id_usuario", id_usuario);
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                usuario = new UsuarioInDto
+                                {
+                                    persona = new PersonaDto
+                                    {
+                                        id_rol = Convert.ToInt32(reader["id_rol"]),
+                                        nombre = reader["nombre_usuario"].ToString(),
+                                        apellido = reader["apellido_usuario"].ToString(),
+                                        correo = reader["correo"].ToString(),
+                                        contrasena = reader["contrasena"].ToString(),
+                                        telefono = reader["telefono"].ToString(),
+                                        direccion = reader["direccion"].ToString(),
+                                        
+                                       
+                                    },
+                                   
+                                    id_semestre = Convert.ToInt32(reader["id_semestre"]),
+                                    id_programa = Convert.ToInt32(reader["id_programa"])
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return usuario;
+        }
+
+
 
         public async Task<bool> LoginUsuario(string correo, string contrasena)
         {

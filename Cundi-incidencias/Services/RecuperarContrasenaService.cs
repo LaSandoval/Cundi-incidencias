@@ -8,10 +8,12 @@ namespace Cundi_incidencias.Services
     public class RecuperarContrasenaService
     {
         private readonly RecuperarContrasenaRepository _recuperarContrasenaRepository;
+        private readonly UsuarioRepository _usuarioRepository;
 
-        public RecuperarContrasenaService(RecuperarContrasenaRepository recuperarContrasenaRepository)
+        public RecuperarContrasenaService(RecuperarContrasenaRepository recuperarContrasenaRepository, UsuarioRepository usuarioRepository)
         {
             _recuperarContrasenaRepository = recuperarContrasenaRepository;
+            _usuarioRepository = usuarioRepository;
         }
         public async Task<RecuperarContrasenaDto> Codigo(RecuperarContrasenaDto recuperarContrasena)
         {
@@ -21,22 +23,26 @@ namespace Cundi_incidencias.Services
           
             RecuperarContrasenaDto recuperarContrasena1 = new RecuperarContrasenaDto();
             int codigo = token.NumeroAleatorio();
-             string cod = codigo.ToString();
+            string cod = codigo.ToString();
+            await _recuperarContrasenaRepository.EliminarToken(recuperarContrasena.id_usuario);
             string destinatario=await _recuperarContrasenaRepository.ObtenerCorreoPorID(recuperarContrasena.id_usuario);
-                correo.enviarCorreoContrasena(destinatario, cod);
+            correo.enviarCorreoContrasena(destinatario, cod);
             recuperarContrasena.token = codigo;
             recuperarContrasena1 = await _recuperarContrasenaRepository.Codigo(recuperarContrasena);
             return recuperarContrasena;
 
         }
-        public async Task<bool> CambiarContrasenaSiCodigoEsValido(int id_usuario, string token, string nuevaContrasena)
+        public async Task<bool> CambiarContrasena(int id_usuario, int token, string nuevaContrasena)
         {
             // Obtener el registro de recuperación
             var recuperarContrasenaDto = await _recuperarContrasenaRepository.ObtenerRecuperacionPorUsuarioYToken(id_usuario, token);
 
             if (recuperarContrasenaDto != null && DateTime.Now <= recuperarContrasenaDto.fecha_expiracion)
             {
+                BycriptUtility bycriptUtility = new BycriptUtility();
+                nuevaContrasena = bycriptUtility.HashPassword(nuevaContrasena);
                 await _usuarioRepository.ActualizarContrasena(id_usuario, nuevaContrasena);
+                await _recuperarContrasenaRepository.EliminarToken(id_usuario);
                 return true;
             }
 

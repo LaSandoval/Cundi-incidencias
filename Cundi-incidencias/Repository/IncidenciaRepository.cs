@@ -18,7 +18,6 @@ namespace Cundi_incidencias.Repository
 
         public async Task<IncidenciaDto> CrearIncidencia(IncidenciaDto incidencia)
         {
-
             string insertQuery = @"INSERT INTO incidencia ( nombre_incidencia, descripcion, imagen, fecha_inicio, fecha_fin, id_usuario, id_estado, id_categoria, id_ubicacion)     
                            VALUES ( @nombre_incidencia, @descripcion, @imagen, @fecha_inicio, @fecha_fin, @id_usuario, @id_estado, @id_categoria, @id_ubicacion)";
 

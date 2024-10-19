@@ -56,6 +56,15 @@ builder.Services.AddScoped<RecuperarContrasenaRepository>(provider =>
 
 builder.Services.AddScoped<RecuperarContrasenaService>();
 
+builder.Services.AddScoped<EmpleadoRepository>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var connectionString = configuration.GetConnectionString("DefaultConnection");
+    return new EmpleadoRepository(connectionString);
+});
+
+builder.Services.AddScoped<EmpleadoService>();
+
 
 
 // Registro del repositorio de recuperación de contraseña
