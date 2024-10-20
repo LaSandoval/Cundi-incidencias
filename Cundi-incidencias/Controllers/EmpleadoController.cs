@@ -55,7 +55,7 @@ namespace Cundi_incidencias.Controllers
             }
         }
         [HttpGet("ListaEmpleados")]
-        public async Task<IActionResult> MostrarEjercicios()
+        public async Task<IActionResult> MostrarEmpleados()
         {
             List<EmpleadoDto> listEmpleados = new List<EmpleadoDto>();
             listEmpleados = await _empleadoService.MostrarEmpleado();
@@ -64,6 +64,51 @@ namespace Cundi_incidencias.Controllers
                 return NotFound("No hay empleados registrados");
             }
             return Ok(listEmpleados);
+        }
+
+        [HttpPost("Asignar")]
+        public async Task<IActionResult> Asignar([FromForm] int id_usuario, [FromForm] int id_incidencia)
+        {
+            try
+            {
+
+                if (await _empleadoService.Asignar(id_usuario, id_incidencia) !=0)
+                {
+                    return Ok(new { mensaje = "ASIGNADO EXITOSAMENTE" });
+                }
+                else
+                {
+                    return BadRequest(new { message = "FALLO" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "ERROR: " + ex.Message);
+            }
+        }
+        [HttpGet("ObtenerIncidenciasAsignadas")]
+        public async Task<IActionResult> MostrarIncidencias(int id_usuario)
+        {
+            List<IncidenciaDto> listIncidencias = new List<IncidenciaDto>();
+            listIncidencias = await _empleadoService.ObtenerIncidencia(id_usuario);
+            if (listIncidencias.Count == 0)
+            {
+                return NotFound("No hay incidencias registradas");
+            }
+            return Ok(listIncidencias);
+        }
+        [HttpPost("ActualizarInci")]
+        public async Task<IActionResult> ActualizarInci([FromForm] int id_incidencia, [FromForm] string descripcion, [FromForm] string imagen)
+        {
+            try
+            {
+                await _empleadoService.ActualizarIncidencia(id_incidencia, descripcion, imagen);
+                return Ok(new { mensaje = "INCIDENCIA ACTUALIZADA EXITOSAMENTE" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "ERROR: " + ex.Message);
+            }
         }
     }
 }

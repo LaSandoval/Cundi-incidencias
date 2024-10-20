@@ -129,6 +129,17 @@ namespace Cundi_incidencias.Controllers
                 id_semestre = usuario.id_semestre
             });
         }
+        [HttpGet("ListaIncidenciaUsuario")]
+        public async Task<IActionResult> MostrarIncidencias(int id_usuario)
+        {
+            List<IncidenciaDto> listIncidencias = new List<IncidenciaDto>();
+            listIncidencias = await _usuarioService.MostrarIncidencia(id_usuario);
+            if (listIncidencias.Count == 0)
+            {
+                return NotFound("No hay incidencias registradas");
+            }
+            return Ok(listIncidencias);
+        }
 
     }
 }

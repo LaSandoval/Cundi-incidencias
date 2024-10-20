@@ -29,9 +29,14 @@ namespace Cundi_incidencias.Services
             return filasactualizadas;
         }
 
-        public async Task<IncidenciaDto> ObtenerIncidenciaPorNombre(string nombre_incidencia)
+        public async Task<IncidenciaDto> ObtenerIncidenciaId(int id_incidencia)
         {
-            return await _incidenciaRepository.ObtenerIncidenciaPorNombre(nombre_incidencia);
+            return await _incidenciaRepository.ObtenerIncidenciaId(id_incidencia);
+        }
+        public async Task<List<IncidenciaDto>> ObtenerHistorialIncidencia()
+        {
+            var incidencia = await _incidenciaRepository.ObtenerHistorialIncidencia();
+            return incidencia;
         }
 
         public async Task<int> EliminarIncidencia(string nombre_incidencia)

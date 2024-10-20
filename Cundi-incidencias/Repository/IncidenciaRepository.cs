@@ -80,19 +80,19 @@ namespace Cundi_incidencias.Repository
             return filasactualizadas;
         }
 
-        public async Task<IncidenciaDto> ObtenerIncidenciaPorNombre(string nombre_incidencia)
+        public async Task<IncidenciaDto> ObtenerIncidenciaId (int id_incidencia)
         {
             IncidenciaDto incidencia = null;
-            string query = @"SELECT id_incidencia, nombre_incidencia, descripcion, imagen, fecha_inicio, fecha_fin, id_usuario, id_estado, id_categoria, id_ubicacion 
+            string query = @"SELECT  nombre_incidencia, descripcion, imagen, fecha_inicio, fecha_fin, id_usuario, id_estado, id_categoria, id_ubicacion 
                      FROM incidencia 
-                     WHERE nombre_incidencia = @nombre_incidencia";
+                     WHERE id_incidencia = @id_incidencia";
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 await con.OpenAsync();
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-                    cmd.Parameters.AddWithValue("@nombre_incidencia", nombre_incidencia);
+                    cmd.Parameters.AddWithValue("@id_incidencia", id_incidencia);
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
@@ -100,16 +100,15 @@ namespace Cundi_incidencias.Repository
                         {
                             incidencia = new IncidenciaDto
                             {
-                                id_incidencia = reader.GetInt32(0),
-                                nombre_incidencia = reader.GetString(1),
-                                descripcion = reader.GetString(2),
-                                imagen = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                fecha_inicio = reader.GetString(4),
-                                fecha_fin = reader.GetString(5),
-                                id_usuario = reader.GetInt32(6),
-                                id_estado = reader.GetInt32(7),
-                                id_categoria = reader.GetInt32(8),
-                                id_ubicacion = reader.GetInt32(9)
+                                nombre_incidencia = reader.GetString(0),
+                                descripcion = reader.GetString(1),
+                                imagen = reader.IsDBNull(2) ? null : reader.GetString(2),
+                                fecha_inicio = reader.GetString(3),
+                                fecha_fin = reader.GetString(4),
+                                id_usuario = reader.GetInt32(5),
+                                id_estado = reader.GetInt32(6),
+                                id_categoria = reader.GetInt32(7),
+                                id_ubicacion = reader.GetInt32(8)
                             };
                         }
                     }
@@ -118,6 +117,43 @@ namespace Cundi_incidencias.Repository
             }
 
             return incidencia;
+        }
+        public async Task<List<IncidenciaDto>> ObtenerHistorialIncidencia()
+        {
+            List<IncidenciaDto> incidencias = new List<IncidenciaDto>();
+            string query = @"SELECT  id_incidencia, nombre_incidencia, descripcion, imagen, fecha_inicio, fecha_fin, id_usuario, id_estado, id_categoria, id_ubicacion 
+                     FROM incidencia";
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                await con.OpenAsync();
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var incidencia = new IncidenciaDto
+                            {
+                                id_incidencia = reader.GetInt32(0),
+                                nombre_incidencia = reader.GetString(1),
+                                descripcion = reader.GetString(2),
+                                imagen = reader.GetString(3),
+                                fecha_inicio = reader.GetString(4),
+                                fecha_fin = reader.GetString(5),
+                                id_usuario = reader.GetInt32(6),
+                                id_estado = reader.GetInt32(7),
+                                id_categoria = reader.GetInt32(8),
+                                id_ubicacion = reader.GetInt32(9),
+                            };
+                            incidencias.Add(incidencia);
+                        }
+                    }
+                }
+            }
+            return incidencias;
         }
 
 

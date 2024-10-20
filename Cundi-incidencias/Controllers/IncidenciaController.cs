@@ -44,12 +44,12 @@ namespace Cundi_incidencias.Controllers
             }
         }
 
-        [HttpGet("ObtenerIncidencia/{nombre_incidencia}")]
-        public async Task<IActionResult> ObtenerIncidencia(string nombre_incidencia)
+        [HttpGet("ObtenerIncidencia/{id_incidencia}")]
+        public async Task<IActionResult> ObtenerIncidencia(int id_incidencia)
         {
             try
             {
-                var incidencia = await _incidenciaService.ObtenerIncidenciaPorNombre(nombre_incidencia);
+                var incidencia = await _incidenciaService.ObtenerIncidenciaId(id_incidencia);
                 if (incidencia != null)
                 {
                     return Ok(incidencia);
@@ -58,6 +58,27 @@ namespace Cundi_incidencias.Controllers
                 {
                     return NotFound(new { mensaje = "INCIDENCIA NO ENCONTRADA" });
                 }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "ERROR: " + ex.Message);
+            }
+        }
+        [HttpGet("ObtenerHistorialIncidencia")]
+        public async Task<IActionResult> ObtenerHistorialIncidencia()
+        {
+            try
+            {
+                var incidencia = await _incidenciaService.ObtenerHistorialIncidencia();
+
+                if (incidencia == null)
+                {
+                    return NotFound(new { message = "NO SE HAN ENCONTRADO REGISTROS" });
+                }
+                return Ok(new
+                {
+                    incidencia
+                });
             }
             catch (Exception ex)
             {

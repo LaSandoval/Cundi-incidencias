@@ -141,9 +141,139 @@ namespace Cundi_incidencias.Repository
                 throw new Exception("Error al buscar empleado", ex);
             }
             return listEmpleados;
+
+
         }
+        public async Task<int> Asignar(int id_usuario, int id_incidencia)
+        {
+            int comando = 0;
+            // Query para insertar en empleado_incidencia y actualizar el estado de la incidencia
+            string query = @"
+        BEGIN TRANSACTION;
+
+        -- Insertar en empleado_incidencia
+        INSERT INTO empleado_incidencia (id_usuario, id_incidencia) 
+        VALUES (@id_usuario, @id_incidencia);
+
+        -- Actualizar el estado de la incidencia
+        UPDATE incidencia 
+        SET id_estado = 2 
+        WHERE id_incidencia = @id_incidencia;
+
+        COMMIT TRANSACTION;
+    ";
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                await con.OpenAsync();
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    // Agregar los parámetros
+                    cmd.Parameters.AddWithValue("@id_usuario", id_usuario);
+                    cmd.Parameters.AddWithValue("@id_incidencia", id_incidencia);
+
+                    // Ejecutar el query
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                comando = 1;
+                await con.CloseAsync();
+            }
+
+            return comando;
+        }
+ public async Task<List<IncidenciaDto>> TraerIncidenciasAsignadas(int id_usuario)
+        {
+            List<IncidenciaDto> incidencias = new List<IncidenciaDto>();    
+            string query= @"
+        SELECT i.id_incidencia,
+               i.nombre_incidencia,
+               i.descripcion,
+               i.imagen,
+               i.fecha_inicio,
+               i.fecha_fin,
+               i.id_usuario,
+               i.id_estado,
+               i.id_categoria,
+               i.id_ubicacion,
+               i.fecha_creacion,
+               ei.id_empleado
+        FROM [Cundi_Incidencias].[dbo].[empleado_incidencia] ei
+        JOIN [Cundi_Incidencias].[dbo].[incidencia] i 
+            ON ei.id_incidencia = i.id_incidencia
+        WHERE ei.id_usuario = @id_usuario
+          AND i.id_estado = 2;
+    ";
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                await con.OpenAsync();
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@id_usuario", id_usuario);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var incidencia = new IncidenciaDto
+                            {
+                                id_incidencia = reader.GetInt32(0),
+                                nombre_incidencia = reader.GetString(1),
+                                descripcion = reader.GetString(2),
+                                imagen = reader.GetString(3),
+                                fecha_inicio = reader.GetString(4),
+                                fecha_fin = reader.GetString(5),
+                                id_usuario = reader.GetInt32(6),
+                                id_estado = reader.GetInt32(7),
+                                id_categoria = reader.GetInt32(8),
+                                id_ubicacion = reader.GetInt32(9),
+
+                            };
+                            incidencias.Add(incidencia);
+                        }
+                    }
+                }
+            }
+
+            return incidencias;
+        }
+        public async Task<int> ActualizarIncidencia(int id_incidencia, string descripcion, string imagen)
+        {
+            int resultado = 0;
+
+            string query = @"
+        UPDATE incidencia
+        SET descripcion = @descripcion,
+            imagen = @imagen,
+            id_estado = 3
+        WHERE id_incidencia = @id_incidencia;
+    ";
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                await con.OpenAsync();
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                   
+                    cmd.Parameters.AddWithValue("@id_incidencia", id_incidencia);
+                    cmd.Parameters.AddWithValue("@descripcion", descripcion);
+                    cmd.Parameters.AddWithValue("@imagen", imagen);
+
+                    resultado = await cmd.ExecuteNonQueryAsync();
+                }
+
+                await con.CloseAsync();
+            }
+
+            return resultado;  
+        }
+
+ 
+
 
     }
 
-
 }
+

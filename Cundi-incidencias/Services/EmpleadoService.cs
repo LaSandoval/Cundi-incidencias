@@ -44,5 +44,25 @@ namespace Cundi_incidencias.Services
             listEmpleados = await _empleadoRepository.MostrarEmpleado();
             return listEmpleados;
         }
+        public async Task<int> Asignar(int id_usuario, int id_incidencia)
+        {
+            int comando = 0;
+            comando = await _empleadoRepository.Asignar(id_usuario, id_incidencia);
+            return comando;
+
+        }
+        public async Task<List<IncidenciaDto>> ObtenerIncidencia(int id_usuario)
+        { 
+            List<IncidenciaDto> listIncidencias = new List<IncidenciaDto>();
+            listIncidencias = await _empleadoRepository.TraerIncidenciasAsignadas(id_usuario);
+            return listIncidencias;
+
+        }
+        public async Task<int> ActualizarIncidencia(int id_incidencia, string descripcion, string imagen)
+        {
+            int resultado = 0;
+            resultado = await _empleadoRepository.ActualizarIncidencia(id_incidencia, descripcion, imagen);
+            return resultado;
+        }
     }
 }

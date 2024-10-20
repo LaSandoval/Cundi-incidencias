@@ -83,5 +83,11 @@ namespace Cundi_incidencias.Services
 
             
         }
+        public async Task<List<IncidenciaDto>> MostrarIncidencia(int id_usuario)
+        {
+            List<IncidenciaDto> listIncidencias = new List<IncidenciaDto>();
+            listIncidencias = await _usuarioRepository.MostrarIncidencia(id_usuario);
+            return listIncidencias;
+        }
+        }
     }
-}
