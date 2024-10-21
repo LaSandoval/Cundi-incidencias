@@ -80,7 +80,6 @@ namespace Cundi_incidencias.Services
             {
                 return false;
             }
-
             
         }
         public async Task<List<IncidenciaDto>> MostrarIncidencia(int id_usuario)

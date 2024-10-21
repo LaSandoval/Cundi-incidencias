@@ -15,12 +15,13 @@ namespace Cundi_incidencias.Controllers
             _recuperarContrasenaService = recuperarContrasenaService;
         }
 
+
         [HttpPost("RecuperarContrasena")]
-        public async Task<IActionResult> RecuperarContrasena([FromBody] RecuperarContrasenaDto recuperarContrasena)
+        public async Task<IActionResult> RecuperarContrasena([FromForm] string correo)
         {
             try
             {
-                await _recuperarContrasenaService.Codigo(recuperarContrasena);
+                await _recuperarContrasenaService.Codigo(correo);
                 return Ok(new { mensaje = "CODIGO HECHO EXITOSAMENTE" });
 
             }
@@ -30,11 +31,11 @@ namespace Cundi_incidencias.Controllers
             }
         }
         [HttpPost("ValidarCodigoYActualizarContrasena")]
-        public async Task<IActionResult> ValidarCodigoYActualizarContrasena( [FromBody] RecuperarContrasenaDto recuperarContrasena,[FromQuery] string nuevaContrasena)
+        public async Task<IActionResult> ValidarCodigoYActualizarContrasena( [FromForm] int token ,[FromQuery] string nuevaContrasena)
         {
             try
             {
-                bool resultado = await _recuperarContrasenaService.CambiarContrasena(  recuperarContrasena.id_usuario,recuperarContrasena.token,  nuevaContrasena  );
+                bool resultado = await _recuperarContrasenaService.CambiarContrasena( token,  nuevaContrasena  );
 
                 if (resultado)
                     return Ok(new { mensaje = "Contraseña actualizada exitosamente" });

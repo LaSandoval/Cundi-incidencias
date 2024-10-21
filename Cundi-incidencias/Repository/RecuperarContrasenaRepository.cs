@@ -11,11 +11,34 @@ namespace Cundi_incidencias.Repository
         {
             _connectionString = connectionString;
         }
-
-        public async Task<RecuperarContrasenaDto> Codigo(RecuperarContrasenaDto recuperarContrasena)
+        public async Task<int> BuscarId(string correo)
         {
-            recuperarContrasena.fecha_solicitud = DateTime.Now;
-            recuperarContrasena.fecha_expiracion = recuperarContrasena.fecha_solicitud.AddMinutes(10);
+            string query = "SELECT id_usuario FROM usuario WHERE correo = @correo";
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                await con.OpenAsync();
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@correo", correo);
+
+                    object id_usuario = await cmd.ExecuteScalarAsync();
+
+                    if (id_usuario == null)
+                    {
+                        throw new Exception("No se encontró ningún usuario con el correo proporcionado.");
+                    }
+                  return Convert.ToInt32(id_usuario);
+                }
+            }
+        }
+
+
+        public async Task<int> Codigo(int id_usuario, int token)
+        {
+            int filas = 0;
+            DateTime fecha_solicitud = DateTime.Now;
+            DateTime fecha_expiracion = fecha_solicitud.AddMinutes(10);
 
             string insertQuery = @"INSERT INTO recuperar_contrasena ( id_usuario, token, fecha_solicitud, fecha_expiracion)     
                                    VALUES ( @id_usuario, @token, @fecha_solicitud, @fecha_expiracion)";
@@ -25,42 +48,59 @@ namespace Cundi_incidencias.Repository
                 await con.OpenAsync();
                 using (SqlCommand cmd = new SqlCommand(insertQuery, con))
                 {
-
-                    cmd.Parameters.AddWithValue("@id_usuario", recuperarContrasena.id_usuario);
-                    cmd.Parameters.AddWithValue("@token", recuperarContrasena.token);
-                    cmd.Parameters.AddWithValue("@fecha_solicitud", recuperarContrasena.fecha_solicitud);
-                    cmd.Parameters.AddWithValue("@fecha_expiracion", recuperarContrasena.fecha_expiracion);
+                    cmd.Parameters.AddWithValue("@id_usuario", id_usuario);
+                    cmd.Parameters.AddWithValue("@token", token);
+                    cmd.Parameters.AddWithValue("@fecha_solicitud", fecha_solicitud);
+                    cmd.Parameters.AddWithValue("@fecha_expiracion", fecha_expiracion);
 
                     await cmd.ExecuteNonQueryAsync();
                 }
-
+                filas = 1;
                 await con.CloseAsync();
             }
 
-            return recuperarContrasena;
+            return filas;
         }
-        public async Task<RecuperarContrasenaDto> ObtenerRecuperacionPorUsuarioYToken(int idUsuario, int token)
+        public async Task<int> BuscarIdToken(int token)
         {
-            string query = @"SELECT id_usuario, token, fecha_solicitud, fecha_expiracion 
-                     FROM recuperar_contrasena 
-                     WHERE id_usuario = @id_usuario AND token = @token";
-            RecuperarContrasenaDto recuperarContrasena = null;
+            string query = "SELECT id_usuario FROM recuperar_contrasena WHERE token = @token";
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 await con.OpenAsync();
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-                    // Asigna los valores de los parámetros
-                    cmd.Parameters.AddWithValue("@id_usuario", idUsuario);
                     cmd.Parameters.AddWithValue("@token", token);
 
-                    // Ejecuta la consulta y lee los resultados
+                    object id_usuario = await cmd.ExecuteScalarAsync();
+
+                    if (id_usuario == null)
+                    {
+                        throw new Exception("No se encontró ningún usuario con el token proporcionado.");
+                    }
+                    return Convert.ToInt32(id_usuario);
+                }
+            }
+        }
+
+        public async Task<RecuperarContrasenaDto> ActualizarContrasena(int id_usuario, int token)
+        {
+            string query = @"SELECT id_usuario, token, fecha_solicitud, fecha_expiracion 
+                     FROM recuperar_contrasena 
+                     WHERE id_usuario = @id_usuario AND token = @token";
+            RecuperarContrasenaDto recuperarContrasena = null;
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                await con.OpenAsync();
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@id_usuario", id_usuario);
+                    cmd.Parameters.AddWithValue("@token", token);
+
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
-                            // Llena el objeto con los valores de la fila encontrada
                             recuperarContrasena = new RecuperarContrasenaDto
                             {
                                 id_usuario = (int)reader["id_usuario"],
