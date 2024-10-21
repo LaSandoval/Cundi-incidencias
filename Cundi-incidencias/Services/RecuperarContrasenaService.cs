@@ -48,9 +48,9 @@ namespace Cundi_incidencias.Services
             return false;
         }
 
-        public async Task<bool> ValidarCodigoYActualizarContrasena(int id_usuario, string token, string nuevaContrasena)
+        public async Task<bool> ActualizarContrasena(int id_usuario, string token, string nuevaContrasena)
         {
-            return await _recuperarContrasenaRepository.ValidarCodigoYActualizarContrasena(id_usuario, token, nuevaContrasena);
+            return await _recuperarContrasenaRepository.ActualizarContrasena(id_usuario, token, nuevaContrasena);
         }
 
 

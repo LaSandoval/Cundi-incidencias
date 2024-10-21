@@ -22,7 +22,7 @@ namespace Cundi_incidencias.Repository
                 {
                     cmd.Parameters.AddWithValue("@correo", correo);
 
-                    object id_usuario = await cmd.ExecuteScalarAsync();
+                    var id_usuario = await cmd.ExecuteScalarAsync();
 
                     if (id_usuario == null)
                     {
@@ -72,7 +72,7 @@ namespace Cundi_incidencias.Repository
                 {
                     cmd.Parameters.AddWithValue("@token", token);
 
-                    object id_usuario = await cmd.ExecuteScalarAsync();
+                    var id_usuario = await cmd.ExecuteScalarAsync();
 
                     if (id_usuario == null)
                     {
@@ -146,7 +146,7 @@ namespace Cundi_incidencias.Repository
 
             return correo;
         }
-        public async Task<bool> ValidarCodigoYActualizarContrasena(int id_usuario, string token, string nuevaContrasena)
+        public async Task<bool> ActualizarContrasena(int id_usuario, string token, string nuevaContrasena)
         {
             string query = @"SELECT token, fecha_expiracion FROM recuperar_contrasena 
                                  WHERE id_usuario = @id_usuario AND token = @token";
@@ -155,7 +155,6 @@ namespace Cundi_incidencias.Repository
             {
                 await con.OpenAsync();
 
-                // Primero, validamos el código y la fecha de expiración
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     cmd.Parameters.AddWithValue("@id_usuario", id_usuario);
@@ -177,7 +176,6 @@ namespace Cundi_incidencias.Repository
                     }
                 }
 
-                // Si la validación fue exitosa, actualizamos la contraseña
                 string queryAct = @"UPDATE usuario SET contrasena = @nuevaContrasena 
                                              WHERE id_usuario = @id_usuario";
 

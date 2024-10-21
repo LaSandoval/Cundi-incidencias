@@ -16,8 +16,8 @@ namespace Cundi_incidencias.Controllers
         }
 
 
-        [HttpPost("RecuperarContrasena")]
-        public async Task<IActionResult> RecuperarContrasena([FromForm] string correo)
+        [HttpPost("EnviarCodigo")]
+        public async Task<IActionResult> EnviarCodigo([FromForm] string correo)
         {
             try
             {
@@ -30,8 +30,8 @@ namespace Cundi_incidencias.Controllers
                 return StatusCode(500, "ERROR: " + ex.Message);
             }
         }
-        [HttpPost("ValidarCodigoYActualizarContrasena")]
-        public async Task<IActionResult> ValidarCodigoYActualizarContrasena( [FromForm] int token ,[FromQuery] string nuevaContrasena)
+        [HttpPost("ActualizarContrasena")]
+        public async Task<IActionResult> ActualizarContrasena( [FromForm] int token ,[FromQuery] string nuevaContrasena)
         {
             try
             {
