@@ -57,8 +57,9 @@ namespace Cundi_incidencias.Controllers
 
 
         [HttpPost("Login")]
-       public async Task<IActionResult> login([FromForm] string correo, [FromForm] string contrasena)
-           {
+        [ValidarCorreo] 
+        public async Task<IActionResult> login([FromForm] string correo, [FromForm] string contrasena)
+        {
             try
             {
                 if (await _usuarioService.IniciarSesion(correo, contrasena) == true)
@@ -70,14 +71,15 @@ namespace Cundi_incidencias.Controllers
                     return BadRequest(new { message = "INICIO DE SESIÓN FALLIDO" });
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, "ERROR: " + ex.Message);
             }
-           }
-       
-    [HttpPost("Actualizar")]
-        public async Task<IActionResult> ActualizarUsuario([FromForm] string correo, [FromForm] string programa, 
+        }
+
+        [HttpPost("Actualizar")]
+        [ValidarCorreo]  
+        public async Task<IActionResult> ActualizarUsuario([FromForm] string correo, [FromForm] string programa,
         [FromForm] string semestre, [FromForm] string direccion, [FromForm] string telefono)
         {
             try
@@ -90,7 +92,9 @@ namespace Cundi_incidencias.Controllers
                 return StatusCode(500, "ERROR: " + ex.Message);
             }
         }
+
         [HttpDelete("Eliminar")]
+        [ValidarCorreo] 
         public async Task<IActionResult> EliminarUsuario([FromForm] string correo)
         {
             try
@@ -104,6 +108,7 @@ namespace Cundi_incidencias.Controllers
             }
         }
 
+
         [HttpGet("Traer-Datos-Usuario")]
         public async Task<IActionResult> ObtenerDatosPersona([FromQuery] int id_usuario)
         {
@@ -111,7 +116,7 @@ namespace Cundi_incidencias.Controllers
 
             if (usuario == null)
             {
-                return NotFound("Usuario no encontrado.");
+                return NotFound("USUARIO NO ENCONTRADO");
             }
 
             return Ok(new
@@ -136,7 +141,7 @@ namespace Cundi_incidencias.Controllers
             listIncidencias = await _usuarioService.MostrarIncidencia(id_usuario);
             if (listIncidencias.Count == 0)
             {
-                return NotFound("No hay incidencias registradas");
+                return NotFound("NO HAY INCIDENCIAS REGISTRADAS");
             }
             return Ok(listIncidencias);
         }

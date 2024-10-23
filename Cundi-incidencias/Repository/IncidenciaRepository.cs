@@ -83,9 +83,9 @@ namespace Cundi_incidencias.Repository
         public async Task<IncidenciaDto> ObtenerIncidenciaId (int id_incidencia)
         {
             IncidenciaDto incidencia = null;
-            string query = @"SELECT  nombre_incidencia, descripcion, imagen, fecha_inicio, fecha_fin, id_usuario, id_estado, id_categoria, id_ubicacion 
-                     FROM incidencia 
-                     WHERE id_incidencia = @id_incidencia";
+            string query = @" SELECT i.nombre_incidencia, i.descripcion, i.imagen, i.fecha_inicio, i.fecha_fin,  i.id_usuario, i.id_estado, e.nombre_estado, i.id_categoria, i.id_ubicacion
+        FROM incidencia i  JOIN estado e ON i.id_estado = e.id_estado  WHERE i.id_incidencia = @id_incidencia";
+            ;
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
@@ -107,8 +107,9 @@ namespace Cundi_incidencias.Repository
                                 fecha_fin = reader.GetString(4),
                                 id_usuario = reader.GetInt32(5),
                                 id_estado = reader.GetInt32(6),
-                                id_categoria = reader.GetInt32(7),
-                                id_ubicacion = reader.GetInt32(8)
+                                nombre_estado= reader.GetString(7),
+                                id_categoria = reader.GetInt32(8),
+                                id_ubicacion = reader.GetInt32(9)
                             };
                         }
                     }
@@ -118,11 +119,12 @@ namespace Cundi_incidencias.Repository
 
             return incidencia;
         }
+
         public async Task<List<IncidenciaDto>> ObtenerHistorialIncidencia()
         {
             List<IncidenciaDto> incidencias = new List<IncidenciaDto>();
-            string query = @"SELECT  id_incidencia, nombre_incidencia, descripcion, imagen, fecha_inicio, fecha_fin, id_usuario, id_estado, id_categoria, id_ubicacion 
-                     FROM incidencia";
+            string query = @"SELECT  i.id_incidencia, i.nombre_incidencia, i.descripcion, i.imagen, i.fecha_inicio, i.fecha_fin, i.id_usuario, 
+                i.id_estado, e.nombre_estado, i.id_categoria, i.id_ubicacion  FROM incidencia i JOIN estado e ON i.id_estado = e.id_estado"; 
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
@@ -130,7 +132,6 @@ namespace Cundi_incidencias.Repository
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
@@ -145,8 +146,9 @@ namespace Cundi_incidencias.Repository
                                 fecha_fin = reader.GetString(5),
                                 id_usuario = reader.GetInt32(6),
                                 id_estado = reader.GetInt32(7),
-                                id_categoria = reader.GetInt32(8),
-                                id_ubicacion = reader.GetInt32(9),
+                                nombre_estado = reader.GetString(8),
+                                id_categoria = reader.GetInt32(9),
+                                id_ubicacion = reader.GetInt32(10),
                             };
                             incidencias.Add(incidencia);
                         }

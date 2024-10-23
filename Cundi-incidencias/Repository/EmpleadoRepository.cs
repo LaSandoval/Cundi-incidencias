@@ -66,7 +66,7 @@ namespace Cundi_incidencias.Repository
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error al actualizar el Empleado: " + ex.Message);
+                Console.WriteLine("ERROR AL ACTUALIZAR EL EMPLEADO: " + ex.Message);
             }
 
             return filasactualizadas;
@@ -92,7 +92,7 @@ namespace Cundi_incidencias.Repository
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error al eliminar el empleado: " + ex.Message);
+                Console.WriteLine("ERROR AL ELIMINAR EL EMPLEADO: " + ex.Message);
             }
 
             return filasEliminadas;
@@ -138,7 +138,7 @@ namespace Cundi_incidencias.Repository
             }
             catch (SqlException ex)
             {
-                throw new Exception("Error al buscar empleado", ex);
+                throw new Exception("ERROR AL BUSCAR EMPLEADO", ex);
             }
             return listEmpleados;
 
@@ -147,7 +147,6 @@ namespace Cundi_incidencias.Repository
         public async Task<int> Asignar(int id_usuario, int id_incidencia)
         {
             int comando = 0;
-            // Query para insertar en empleado_incidencia y actualizar el estado de la incidencia
             string query = @"
         BEGIN TRANSACTION;
 
@@ -168,11 +167,9 @@ namespace Cundi_incidencias.Repository
                 await con.OpenAsync();
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-                    // Agregar los parámetros
                     cmd.Parameters.AddWithValue("@id_usuario", id_usuario);
                     cmd.Parameters.AddWithValue("@id_incidencia", id_incidencia);
 
-                    // Ejecutar el query
                     await cmd.ExecuteNonQueryAsync();
                 }
                 comando = 1;

@@ -38,9 +38,9 @@ namespace Cundi_incidencias.Controllers
                 bool resultado = await _recuperarContrasenaService.CambiarContrasena( token,  nuevaContrasena  );
 
                 if (resultado)
-                    return Ok(new { mensaje = "Contraseña actualizada exitosamente" });
+                    return Ok(new { mensaje = "CONTRASEÑA ACTUALIZADA EXITOSAMENTE" });
                 else
-                    return BadRequest(new { mensaje = "Código inválido o expirado" });
+                    return BadRequest(new { mensaje = "CÓDIGO INVALIDO O EXPIRADO" });
             }
             catch (Exception ex)
             {

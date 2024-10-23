@@ -61,7 +61,7 @@ namespace Cundi_incidencias.Controllers
             listEmpleados = await _empleadoService.MostrarEmpleado();
             if (listEmpleados.Count == 0)
             {
-                return NotFound("No hay empleados registrados");
+                return NotFound("NO HAY EMPLEADOS REGISTRADOS");
             }
             return Ok(listEmpleados);
         }
@@ -93,7 +93,7 @@ namespace Cundi_incidencias.Controllers
             listIncidencias = await _empleadoService.ObtenerIncidencia(id_usuario);
             if (listIncidencias.Count == 0)
             {
-                return NotFound("No hay incidencias registradas");
+                return NotFound("NO HAY INCIDENCIAS REGISTRADAS");
             }
             return Ok(listIncidencias);
         }

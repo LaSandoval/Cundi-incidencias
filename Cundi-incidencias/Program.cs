@@ -66,7 +66,6 @@ builder.Services.AddScoped<EmpleadoRepository>(provider =>
 builder.Services.AddScoped<EmpleadoService>();
 
 
-
 // Registro del repositorio de recuperación de contraseña
 
 

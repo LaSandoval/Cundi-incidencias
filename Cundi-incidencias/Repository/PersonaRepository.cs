@@ -92,11 +92,5 @@ namespace Cundi_incidencias.Repository
             return persona;
 
         }
-        /*
-        public async Task<RecuperarContrasenaDto> RecuperarContrasena(string correo, int id)
-        {
-
-        }
-                 */   
     }
 }
