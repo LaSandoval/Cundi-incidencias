@@ -316,8 +316,8 @@ namespace Cundi_incidencias.Repository
         public async Task<List<IncidenciaDto>>MostrarIncidencia(int id_usuario)
         {
             List<IncidenciaDto> incidencias = new List<IncidenciaDto>();
-            string query = @"SELECT  id_incidencia, nombre_incidencia, descripcion, imagen, fecha_inicio, fecha_fin, id_estado, id_categoria, id_ubicacion 
-                     FROM incidencia WHERE id_usuario=@id_usuario";
+            string query = @"SELECT i.id_incidencia, i.nombre_incidencia, i.descripcion, i.imagen, i.fecha_inicio, i.fecha_fin, i.id_estado, e.nombre_estado, i.id_categoria, i.id_ubicacion
+        FROM incidencia i JOIN estado e ON i.id_estado = e.id_estado WHERE i.id_usuario = @id_usuario";
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
@@ -340,8 +340,9 @@ namespace Cundi_incidencias.Repository
                                 fecha_inicio = reader.GetString(4),
                                 fecha_fin = reader.GetString(5),
                                 id_estado = reader.GetInt32(6),
-                                id_categoria = reader.GetInt32(7),
-                                id_ubicacion = reader.GetInt32(8),
+                                nombre_estado=reader.GetString(7),
+                                id_categoria = reader.GetInt32(8),
+                                id_ubicacion = reader.GetInt32(9),
                             };
                             incidencias.Add(incidencia);
                         }
