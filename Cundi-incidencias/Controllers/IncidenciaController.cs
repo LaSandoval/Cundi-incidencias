@@ -15,6 +15,7 @@ namespace Cundi_incidencias.Controllers
             _incidenciaService = incidenciaService;
         }
 
+
         [HttpPost("RegistrarIncidencia")]
         public async Task<IActionResult> RegistrarIncidencia([FromBody] IncidenciaDto incidencia)
         {
@@ -30,13 +31,19 @@ namespace Cundi_incidencias.Controllers
             }
         }
 
-        [HttpPost("ActualizarInci")]
-        public async Task<IActionResult> ActualizarInci([FromForm] string nombre_incidencia, [FromForm] string imagen, [FromForm] int id_categoria, [FromForm] int id_ubicacion)
+        [HttpPut("ActualizarInci")]
+        public async Task<IActionResult> ActualizarInci([FromForm] int id_incidencia,[FromForm] string nombre_incidencia, [FromForm] string descripcion, [FromForm] string imagen, [FromForm] int id_categoria, [FromForm] int id_ubicacion)
         {
             try
             {
-                await _incidenciaService.ActualizarIncidencia(nombre_incidencia, imagen, id_categoria, id_ubicacion);
-                return Ok(new { mensaje = "INCIDENCIA ACTUALIZADA EXITOSAMENTE" });
+                if(await _incidenciaService.ActualizarIncidencia(id_incidencia, nombre_incidencia, descripcion, imagen, id_categoria, id_ubicacion) > 0)
+                {
+                    return Ok(new { mensaje = "INCIDENCIA ACTUALIZADA EXITOSAMENTE" });
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
             catch (Exception ex)
             {
@@ -86,12 +93,12 @@ namespace Cundi_incidencias.Controllers
             }
         }
 
-        [HttpDelete("EliminarIncidencia/{nombre_incidencia}")]
-        public async Task<IActionResult> EliminarIncidencia(string nombre_incidencia)
+        [HttpDelete("EliminarIncidencia")]
+        public async Task<IActionResult> EliminarIncidencia([FromQuery] int id_incidencia)
         {
             try
             {
-                var result = await _incidenciaService.EliminarIncidencia(nombre_incidencia);
+                var result = await _incidenciaService.EliminarIncidencia(id_incidencia);
                 if (result > 0)
                 {
                     return Ok(new { mensaje = "INCIDENCIA ELIMINADA EXITOSAMENTE" });

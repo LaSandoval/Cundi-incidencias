@@ -18,14 +18,15 @@ namespace Cundi_incidencias.Services
         {
             IncidenciaDto incidencia1 = new IncidenciaDto();
             incidencia.id_estado = 1;
+            incidencia.fecha_inicio=DateTime.Now;
             incidencia1 = await _incidenciaRepository.CrearIncidencia(incidencia);
             return incidencia;
 
         }
-        public async Task<int> ActualizarIncidencia(string nombre_incidencia, string imagen, int id_categoria, int id_ubicacion)
+        public async Task<int> ActualizarIncidencia(int id_incidencia, string nombre_incidencia,string descripcion, string imagen, int id_categoria, int id_ubicacion)
         {
-            int filasactualizadas = 0;
-            filasactualizadas = await _incidenciaRepository.ActualizarIncidencia(nombre_incidencia, imagen, id_categoria, id_ubicacion);
+            int filasactualizadas;
+            filasactualizadas = await _incidenciaRepository.ActualizarIncidencia(id_incidencia, nombre_incidencia, descripcion, imagen, id_categoria, id_ubicacion);
             return filasactualizadas;
         }
 
@@ -39,9 +40,11 @@ namespace Cundi_incidencias.Services
             return incidencia;
         }
 
-        public async Task<int> EliminarIncidencia(string nombre_incidencia)
+        public async Task<int> EliminarIncidencia(int id_incidencia)
         {
-            return await _incidenciaRepository.EliminarIncidencia(nombre_incidencia);
+           int filasEliminadas;
+           filasEliminadas= await _incidenciaRepository.EliminarIncidencia(id_incidencia);
+            return filasEliminadas;
         }
     }
 }

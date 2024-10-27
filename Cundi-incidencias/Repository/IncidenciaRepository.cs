@@ -18,8 +18,8 @@ namespace Cundi_incidencias.Repository
 
         public async Task<IncidenciaDto> CrearIncidencia(IncidenciaDto incidencia)
         {
-            string insertQuery = @"INSERT INTO incidencia ( nombre_incidencia, descripcion, imagen, fecha_inicio, fecha_fin, id_usuario, id_estado, id_categoria, id_ubicacion)     
-                           VALUES ( @nombre_incidencia, @descripcion, @imagen, @fecha_inicio, @fecha_fin, @id_usuario, @id_estado, @id_categoria, @id_ubicacion)";
+            string insertQuery = @"INSERT INTO incidencia ( nombre_incidencia, descripcion, imagen, fecha_inicio, id_usuario, id_estado, id_categoria, id_ubicacion)     
+                           VALUES ( @nombre_incidencia, @descripcion, @imagen, @fecha_inicio, @id_usuario, @id_estado, @id_categoria, @id_ubicacion)";
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
@@ -32,7 +32,6 @@ namespace Cundi_incidencias.Repository
                         cmd.Parameters.AddWithValue("@descripcion", incidencia.descripcion);
                         cmd.Parameters.AddWithValue("@imagen", incidencia.imagen);
                         cmd.Parameters.AddWithValue("@fecha_inicio", incidencia.fecha_inicio);
-                        cmd.Parameters.AddWithValue("@fecha_fin", incidencia.fecha_fin);
                         cmd.Parameters.AddWithValue("@id_usuario", incidencia.id_usuario);
                         cmd.Parameters.AddWithValue("@id_estado", incidencia.id_estado);
                         cmd.Parameters.AddWithValue("@id_categoria", incidencia.id_categoria);
@@ -47,29 +46,28 @@ namespace Cundi_incidencias.Repository
                 return incidencia;
             }
         }
-        public async Task<int>ActualizarIncidencia(string nombre_incidencia, string imagen, int id_categoria, int id_ubicacion)
-        { 
-        int filasactualizadas = 0;
-        string query = @"UPDATE incidencia 
-                     SET imagen = @imagen, 
-                         id_categoria = @id_categoria, 
-                         id_ubicacion = @id_ubicacion,
-                     WHERE nombre_incidencia = @nombre_incidencia";
+        public async Task<int> ActualizarIncidencia(int id_incidencia, string nombre_incidencia, string descripcion, string imagen, int id_categoria, int id_ubicacion)
+        {
+            int filasactualizadas = 0;
+       //     string query = @"UPDATE incidencia  SET nombre_incidencia=@nombre_incidencia,imagen = @imagen, descripcion=@descripcion,id_categoria = @id_categoria, id_ubicacion = @id_ubicacion,  WHERE id_incidencia = @id_incidencia";
             try
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("dbo.UPD_INCIDENCIA", con))
                     {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@id_incidencia", id_incidencia);
                         cmd.Parameters.AddWithValue("@nombre_incidencia", nombre_incidencia);
+                        cmd.Parameters.AddWithValue("@descripcion", descripcion);
                         cmd.Parameters.AddWithValue("@imagen", imagen);
                         cmd.Parameters.AddWithValue("@id_categoria", id_categoria);
                         cmd.Parameters.AddWithValue("@id_ubicacion", id_ubicacion);
-
-                        filasactualizadas = await cmd.ExecuteNonQueryAsync();
-}
-                     await con.CloseAsync();
+                        await cmd.ExecuteNonQueryAsync();
+                        filasactualizadas = 1; 
+                    }
+                    await con.CloseAsync();
                 }
             }
             catch (Exception ex)
@@ -80,7 +78,7 @@ namespace Cundi_incidencias.Repository
             return filasactualizadas;
         }
 
-        public async Task<IncidenciaDto> ObtenerIncidenciaId (int id_incidencia)
+        public async Task<IncidenciaDto> ObtenerIncidenciaId(int id_incidencia)
         {
             IncidenciaDto incidencia = null;
             string query = @" SELECT i.nombre_incidencia, i.descripcion, i.imagen, i.fecha_inicio, i.fecha_fin,  i.id_usuario, i.id_estado, e.nombre_estado, i.id_categoria, i.id_ubicacion
@@ -103,11 +101,11 @@ namespace Cundi_incidencias.Repository
                                 nombre_incidencia = reader.GetString(0),
                                 descripcion = reader.GetString(1),
                                 imagen = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                fecha_inicio = reader.GetString(3),
-                                fecha_fin = reader.GetString(4),
+                                fecha_inicio = reader.GetDateTime(3),
+                                fecha_fin = reader.GetDateTime(4),
                                 id_usuario = reader.GetInt32(5),
                                 id_estado = reader.GetInt32(6),
-                                nombre_estado= reader.GetString(7),
+                                nombre_estado = reader.GetString(7),
                                 id_categoria = reader.GetInt32(8),
                                 id_ubicacion = reader.GetInt32(9)
                             };
@@ -124,7 +122,7 @@ namespace Cundi_incidencias.Repository
         {
             List<IncidenciaDto> incidencias = new List<IncidenciaDto>();
             string query = @"SELECT  i.id_incidencia, i.nombre_incidencia, i.descripcion, i.imagen, i.fecha_inicio, i.fecha_fin, i.id_usuario, 
-                i.id_estado, e.nombre_estado, i.id_categoria, i.id_ubicacion  FROM incidencia i JOIN estado e ON i.id_estado = e.id_estado"; 
+                i.id_estado, e.nombre_estado, i.id_categoria, i.id_ubicacion  FROM incidencia i JOIN estado e ON i.id_estado = e.id_estado";
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
@@ -142,8 +140,8 @@ namespace Cundi_incidencias.Repository
                                 nombre_incidencia = reader.GetString(1),
                                 descripcion = reader.GetString(2),
                                 imagen = reader.GetString(3),
-                                fecha_inicio = reader.GetString(4),
-                                fecha_fin = reader.GetString(5),
+                                fecha_inicio = reader.GetDateTime(4),
+                                fecha_fin = reader.GetDateTime(5),
                                 id_usuario = reader.GetInt32(6),
                                 id_estado = reader.GetInt32(7),
                                 nombre_estado = reader.GetString(8),
@@ -159,20 +157,22 @@ namespace Cundi_incidencias.Repository
         }
 
 
-        public async Task<int> EliminarIncidencia(string nombre_incidencia)
+    public async Task<int> EliminarIncidencia(int id_incidencia)
         {
             int filasEliminadas = 0;
-            string query = @"DELETE FROM incidencia WHERE nombre_incidencia = @nombre_incidencia";
+           // string query = @"DELETE FROM incidencia WHERE id_incidencia = @id_incidencia";
 
             try
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("dbo.ELIMINAR_INCIDENCIA", con))
                     {
-                        cmd.Parameters.AddWithValue("@nombre_incidencia", nombre_incidencia);
-                        filasEliminadas = await cmd.ExecuteNonQueryAsync();
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@id_incidencia", id_incidencia);
+                        await cmd.ExecuteNonQueryAsync();
+                        filasEliminadas = 1;
                     }
                     await con.CloseAsync();
                 }

@@ -40,9 +40,9 @@ namespace Cundi_incidencias.Controllers
         {
             try
             {
-                if(await _usuarioService.ActivarCuenta(token)!=0)
+                if (await _usuarioService.ActivarCuenta(token) != 0)
                 {
-                    return Redirect("LINK DE EL LOGIN CUANDO LO CONECTEN CON EL FRONT");
+                    return Redirect("http://localhost:5173/");
                 }
                 else
                 {
@@ -57,7 +57,7 @@ namespace Cundi_incidencias.Controllers
 
 
         [HttpPost("Login")]
-        [ValidarCorreo] 
+        [ValidarCorreo]
         public async Task<IActionResult> login([FromForm] string correo, [FromForm] string contrasena)
         {
             try
@@ -78,14 +78,20 @@ namespace Cundi_incidencias.Controllers
         }
 
         [HttpPost("Actualizar")]
-        [ValidarCorreo]  
-        public async Task<IActionResult> ActualizarUsuario([FromForm] string correo, [FromForm] string programa,
-        [FromForm] string semestre, [FromForm] string direccion, [FromForm] string telefono)
+        [ValidarCorreo]
+        public async Task<IActionResult> ActualizarUsuario([FromForm] string correo, [FromForm] int programa,
+        [FromForm] int semestre, [FromForm] string direccion, [FromForm] string telefono)
         {
             try
             {
-                await _usuarioService.ActualizarUsuario(correo, programa, semestre, direccion, telefono);
-                return Ok(new { mensaje = "USUARIO ACTUALIZADO EXITOSAMENTE" });
+                if (await _usuarioService.ActualizarUsuario(correo, programa, semestre, direccion, telefono) == 1)
+                {
+                    return Ok(new { mensaje = "USUARIO ACTUALIZADO EXITOSAMENTE" });
+                }
+                else
+                {
+                    return BadRequest(new { message = "ERROR" }); ;
+                }
             }
             catch (Exception ex)
             {
@@ -94,20 +100,22 @@ namespace Cundi_incidencias.Controllers
         }
 
         [HttpDelete("Eliminar")]
-        [ValidarCorreo] 
-        public async Task<IActionResult> EliminarUsuario([FromForm] string correo)
+        [ValidarCorreo]
+        public async Task<IActionResult> EliminarUsuario([FromQuery] int id_usuario)
         {
             try
             {
-                await _usuarioService.EliminarUsuario(correo);
+                string descripcion = $"Eliminar al usuario {id_usuario}";
+                await _usuarioService.EliminarUsuario(id_usuario, descripcion);
                 return Ok(new { mensaje = "USUARIO ELIMINADO EXITOSAMENTE" });
-            }
+                    }
+
             catch (Exception ex)
             {
                 return StatusCode(500, "ERROR: " + ex.Message);
             }
         }
-
+    
 
         [HttpGet("Traer-Datos-Usuario")]
         public async Task<IActionResult> ObtenerDatosPersona([FromQuery] int id_usuario)

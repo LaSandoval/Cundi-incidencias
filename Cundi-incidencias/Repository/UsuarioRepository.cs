@@ -236,12 +236,12 @@ namespace Cundi_incidencias.Repository
 
             return usuario;
         }
-        public async Task<int> ActualizarUsuario(string correo, string programa, string semestre, string direccion, string telefono)
+        public async Task<int> ActualizarUsuario(string correo, int programa, int semestre, string direccion, string telefono)
         {
             int filasactualizadas = 0;
             string query = @"UPDATE usuario 
-                     SET programa = @programa, 
-                         semestre = @semestre, 
+                     SET id_programa = @id_programa, 
+                         id_semestre = @id_semestre, 
                          direccion = @direccion, 
                          telefono = @telefono 
                      WHERE correo = @correo";
@@ -249,16 +249,18 @@ namespace Cundi_incidencias.Repository
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
+
                     await con.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@correo", correo);
-                        cmd.Parameters.AddWithValue("@programa", programa);
-                        cmd.Parameters.AddWithValue("@semestre", semestre);
+                        cmd.Parameters.AddWithValue("@id_programa", programa);
+                        cmd.Parameters.AddWithValue("@id_semestre", semestre);
                         cmd.Parameters.AddWithValue("@direccion", direccion);
                         cmd.Parameters.AddWithValue("@telefono", telefono);
 
-                        filasactualizadas = await cmd.ExecuteNonQueryAsync();
+                        await cmd.ExecuteNonQueryAsync();
+                        filasactualizadas = 1;
                     }
                     await con.CloseAsync();
                 }
@@ -270,19 +272,21 @@ namespace Cundi_incidencias.Repository
 
             return filasactualizadas;
         }
-        public async Task<int> EliminarUsuario(string correo)
+        public async Task<int> EliminarUsuario(int id_usuario, string descripcion)
         {
             int filasEliminadas = 0;
-            string query = @"DELETE FROM usuario WHERE correo = @correo";
+          //  string query = @"DELETE FROM usuario WHERE correo = @correo";
 
             try
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     await con.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlCommand cmd = new SqlCommand("dbo.UPD_ELIMINAR_USUARIO", con))
                     {
-                        cmd.Parameters.AddWithValue("@correo", correo);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@id_usuario", id_usuario);
+                        cmd.Parameters.AddWithValue("@descripcion", descripcion);
 
                         filasEliminadas = await cmd.ExecuteNonQueryAsync();
                     }
@@ -337,9 +341,9 @@ namespace Cundi_incidencias.Repository
                                 nombre_incidencia = reader.GetString(1),
                                 descripcion = reader.GetString(2),
                                 imagen = reader.GetString(3),
-                                fecha_inicio = reader.GetString(4),
-                                fecha_fin = reader.GetString(5),
-                                id_estado = reader.GetInt32(6),
+                                fecha_inicio = reader.GetDateTime(4),
+                                fecha_fin = !reader.IsDBNull(5) ? reader.GetDateTime(5) : (DateTime?)null,
+                            id_estado = reader.GetInt32(6),
                                 nombre_estado=reader.GetString(7),
                                 id_categoria = reader.GetInt32(8),
                                 id_ubicacion = reader.GetInt32(9),

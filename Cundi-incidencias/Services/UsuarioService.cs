@@ -56,17 +56,16 @@ namespace Cundi_incidencias.Services
             UsuarioInDto usuario = await _usuarioRepository.SeleccionarUsuarioAsync(id_usuario);
             return usuario;
         }
-            public async Task<int> ActualizarUsuario(string correo, string programa, string semestre, string direccion, string telefono)
+            public async Task<int> ActualizarUsuario(string correo, int programa, int semestre, string direccion, string telefono)
         {
             int filasactualizadas = 0;
             filasactualizadas = await _usuarioRepository.ActualizarUsuario (correo,programa, semestre, direccion, telefono);
             return filasactualizadas;
 
         }
-        public async Task<int> EliminarUsuario(string correo)
+        public async Task<int> EliminarUsuario(int id_usuario, string descripcion)
         {
-            int filaseliminadas = 0;
-            filaseliminadas = await _usuarioRepository.EliminarUsuario(correo);
+           int filaseliminadas = await _usuarioRepository.EliminarUsuario(id_usuario, descripcion);
             return filaseliminadas;
 
         }
