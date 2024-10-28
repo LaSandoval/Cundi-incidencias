@@ -24,7 +24,7 @@ namespace Cundi_incidencias.Repository
                     cmd.Parameters.AddWithValue("@id_rol", empleado.persona.id_rol);
                     cmd.Parameters.AddWithValue("@nombre_usuario", empleado.persona.nombre);
                     cmd.Parameters.AddWithValue("@apellido_usuario", empleado.persona.apellido);
-                    cmd.Parameters.AddWithValue("@correo", empleado.persona.correo); 
+                    cmd.Parameters.AddWithValue("@correo", empleado.persona.correo);
                     cmd.Parameters.AddWithValue("@contrasena", empleado.persona.contrasena);
                     cmd.Parameters.AddWithValue("@direccion", empleado.persona.direccion);
                     cmd.Parameters.AddWithValue("@fecha_registro", empleado.persona.fecha_registro);
@@ -178,57 +178,49 @@ namespace Cundi_incidencias.Repository
 
             return comando;
         }
- public async Task<List<IncidenciaDto>> TraerIncidenciasAsignadas(int id_usuario)
+        public async Task<List<IncidenciaDto>> TraerIncidenciasAsignadas(int id_usuario)
         {
-            List<IncidenciaDto> incidencias = new List<IncidenciaDto>();    
-            string query= @"
-        SELECT i.id_incidencia,
-               i.nombre_incidencia,
-               i.descripcion,
-               i.imagen,
-               i.fecha_inicio,
-               i.fecha_fin,
-               i.id_usuario,
-               i.id_estado,
-               i.id_categoria,
-               i.id_ubicacion,
-               ei.id_empleado
-        FROM [Cundi_Incidencias].[dbo].[empleado_incidencia] ei
-        JOIN [Cundi_Incidencias].[dbo].[incidencia] i 
-            ON ei.id_incidencia = i.id_incidencia
-        WHERE ei.id_usuario = @id_usuario
-          AND i.id_estado = 2;
-    ";
+            List<IncidenciaDto> incidencias = new List<IncidenciaDto>();
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 await con.OpenAsync();
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("SEL_INCIDENCIA_ASIGNADA", con))
                 {
-                    cmd.Parameters.AddWithValue("@id_usuario", id_usuario);
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@ID_USUARIO", id_usuario);
 
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    try
                     {
-                        while (await reader.ReadAsync())
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                         {
-                            var incidencia = new IncidenciaDto
+                            while (await reader.ReadAsync())
                             {
-                                id_incidencia = reader.GetInt32(0),
-                                nombre_incidencia = reader.GetString(1),
-                                descripcion = reader.GetString(2),
-                                imagen = reader.GetString(3),
-                                fecha_inicio = reader.GetDateTime(4),
-                                fecha_fin = reader.GetDateTime(5),
-                                id_usuario = reader.GetInt32(6),
-                                id_estado = reader.GetInt32(7),
-                                id_categoria = reader.GetInt32(8),
-                                id_ubicacion = reader.GetInt32(9),
+                                var incidencia = new IncidenciaDto
+                                {
+                                    id_incidencia = reader.GetInt32(0),
+                                    nombre_incidencia = reader.GetString(1),
+                                    descripcion = reader.GetString(2),
+                                    imagen = reader.GetString(3),
+                                    fecha_inicio = reader.GetDateTime(4),
+                                    fecha_fin = reader.GetDateTime(5),
+                                    id_usuario = reader.GetInt32(6),
+                                    id_estado = reader.GetInt32(7),
+                                    id_categoria = reader.GetInt32(8),
+                                    id_ubicacion = reader.GetInt32(9),
 
-                            };
-                            incidencias.Add(incidencia);
+                                };
+                                incidencias.Add(incidencia);
+                            }
                         }
                     }
+                    catch (Exception ex)
+                    {
+
+       
+                    }
+                    
                 }
             }
 
@@ -252,7 +244,7 @@ namespace Cundi_incidencias.Repository
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-                   
+
                     cmd.Parameters.AddWithValue("@id_incidencia", id_incidencia);
                     cmd.Parameters.AddWithValue("@descripcion", descripcion);
                     cmd.Parameters.AddWithValue("@imagen", imagen);
@@ -263,10 +255,10 @@ namespace Cundi_incidencias.Repository
                 await con.CloseAsync();
             }
 
-            return resultado;  
+            return resultado;
         }
 
- 
+
 
 
     }
