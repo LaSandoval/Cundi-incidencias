@@ -102,10 +102,10 @@ namespace Cundi_incidencias.Repository
                                 descripcion = reader.GetString(1),
                                 imagen = reader.IsDBNull(2) ? null : reader.GetString(2),
                                 fecha_inicio = reader.GetDateTime(3),
-                                fecha_fin = reader.GetDateTime(4),
+                                fecha_fin = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4),
                                 id_usuario = reader.GetInt32(5),
                                 id_estado = reader.GetInt32(6),
-                                nombre_estado = reader.GetString(7),
+                                nombre_estado = reader.IsDBNull(7) ? null : reader.GetString(7),
                                 id_categoria = reader.GetInt32(8),
                                 id_ubicacion = reader.GetInt32(9)
                             };
@@ -141,10 +141,10 @@ namespace Cundi_incidencias.Repository
                                 descripcion = reader.GetString(2),
                                 imagen = reader.GetString(3),
                                 fecha_inicio = reader.GetDateTime(4),
-                                fecha_fin = reader.GetDateTime(5),
+                                fecha_fin = reader.IsDBNull(5) ? (DateTime?)null : reader.GetDateTime(5),
                                 id_usuario = reader.GetInt32(6),
                                 id_estado = reader.GetInt32(7),
-                                nombre_estado = reader.GetString(8),
+                                nombre_estado = reader.IsDBNull(8) ? null : reader.GetString(8),
                                 id_categoria = reader.GetInt32(9),
                                 id_ubicacion = reader.GetInt32(10),
                             };

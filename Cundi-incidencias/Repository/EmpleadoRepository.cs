@@ -192,7 +192,6 @@ namespace Cundi_incidencias.Repository
                i.id_estado,
                i.id_categoria,
                i.id_ubicacion,
-               i.fecha_creacion,
                ei.id_empleado
         FROM [Cundi_Incidencias].[dbo].[empleado_incidencia] ei
         JOIN [Cundi_Incidencias].[dbo].[incidencia] i 

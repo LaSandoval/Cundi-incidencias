@@ -10,7 +10,7 @@
         public DateTime? fecha_fin{ get; set; }
         public int id_usuario { get; set; }
         public int id_estado { get; set; }
-        public string?nombre_estado { get; set; }
+        public string? nombre_estado { get; set; }
         public int id_categoria { get; set; }
         public int id_ubicacion { get; set; }
     }
