@@ -67,12 +67,12 @@ namespace SPARTANFIT.Utilitys
 
 
             Font headerFont = FontFactory.GetFont("gothmanFont", 12, Font.BOLD, blanco);
-            table.AddCell(new PdfPCell(new Phrase("Nombre", headerFont)) { BackgroundColor = negro });
-            table.AddCell(new PdfPCell(new Phrase("Fecha Inicio", headerFont)) { BackgroundColor = negro });
-            table.AddCell(new PdfPCell(new Phrase("Fecha Fin", headerFont)) { BackgroundColor = negro });
-            table.AddCell(new PdfPCell(new Phrase("Id Uusuario", headerFont)) { BackgroundColor = negro });
-            table.AddCell(new PdfPCell(new Phrase("Categoria", headerFont)) { BackgroundColor = negro });
-            table.AddCell(new PdfPCell(new Phrase("Ubicación", headerFont)) { BackgroundColor = negro });
+            table.AddCell(new PdfPCell(new Phrase("Nombre", headerFont)) { BackgroundColor = verde });
+            table.AddCell(new PdfPCell(new Phrase("Fecha Inicio", headerFont)) { BackgroundColor = verde });
+            table.AddCell(new PdfPCell(new Phrase("Fecha Fin", headerFont)) { BackgroundColor = verde });
+            table.AddCell(new PdfPCell(new Phrase("Id Uusuario", headerFont)) { BackgroundColor = verde });
+            table.AddCell(new PdfPCell(new Phrase("Categoria", headerFont)) { BackgroundColor = verde });
+            table.AddCell(new PdfPCell(new Phrase("Ubicación", headerFont)) { BackgroundColor = verde });
 
             Font contentFont = FontFactory.GetFont("gothamFont", 12);
 
@@ -82,8 +82,8 @@ namespace SPARTANFIT.Utilitys
                 table.AddCell(new PdfPCell(new Phrase(incidencias.fecha_inicio.ToString(), contentFont)));
                 table.AddCell(new PdfPCell(new Phrase(incidencias.fecha_fin.ToString(), contentFont)));
                 table.AddCell(new PdfPCell(new Phrase(incidencias.id_usuario.ToString(), contentFont)));
-                table.AddCell(new PdfPCell(new Phrase(incidencias.id_categoria.ToString(), contentFont)));
-                table.AddCell(new PdfPCell(new Phrase(incidencias.id_ubicacion.ToString(), contentFont)));
+                table.AddCell(new PdfPCell(new Phrase(incidencias.nombre_categoria, contentFont)));
+                table.AddCell(new PdfPCell(new Phrase(incidencias.nombre_ubicacion, contentFont)));
             }
 
             doc.Add(table);

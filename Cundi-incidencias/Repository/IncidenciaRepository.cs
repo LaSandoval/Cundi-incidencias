@@ -122,7 +122,8 @@ namespace Cundi_incidencias.Repository
         {
             List<IncidenciaDto> incidencias = new List<IncidenciaDto>();
             string query = @"SELECT  i.id_incidencia, i.nombre_incidencia, i.descripcion, i.imagen, i.fecha_inicio, i.fecha_fin, i.id_usuario, 
-                i.id_estado, e.nombre_estado, i.id_categoria, i.id_ubicacion  FROM incidencia i JOIN estado e ON i.id_estado = e.id_estado";
+                i.id_estado, e.nombre_estado, i.id_categoria, c.nombre_categoria AS nombre_categoria, i.id_ubicacion, u.nombre_ubicacion AS nombre_ubicacion  FROM incidencia i JOIN estado e ON i.id_estado = e.id_estado JOIN 
+                categoria c ON i.id_categoria= c.id_categoria JOIN ubicacion u ON i.id_ubicacion=u.id_ubicacion";
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
@@ -146,7 +147,9 @@ namespace Cundi_incidencias.Repository
                                 id_estado = reader.GetInt32(7),
                                 nombre_estado = reader.IsDBNull(8) ? null : reader.GetString(8),
                                 id_categoria = reader.GetInt32(9),
-                                id_ubicacion = reader.GetInt32(10),
+                                nombre_categoria= reader.GetString(10),
+                                id_ubicacion = reader.GetInt32(11),
+                                nombre_ubicacion= reader.GetString(12)
                             };
                             incidencias.Add(incidencia);
                         }

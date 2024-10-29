@@ -60,8 +60,9 @@ namespace Cundi_incidencias.Services
         }
         public async Task<int> ActualizarIncidencia(int id_incidencia, string descripcion, string imagen)
         {
+            DateTime fecha_fin = DateTime.Now;
             int resultado = 0;
-            resultado = await _empleadoRepository.ActualizarIncidencia(id_incidencia, descripcion, imagen);
+            resultado = await _empleadoRepository.ActualizarIncidencia(id_incidencia, descripcion, imagen, fecha_fin);
             return resultado;
         }
     }

@@ -62,14 +62,8 @@ namespace Cundi_incidencias.Controllers
         {
             try
             {
-                if (await _usuarioService.IniciarSesion(correo, contrasena) == true)
-                {
-                    return Ok(new { message = "INICIO DE SESIÓN EXITOSO" });
-                }
-                else
-                {
-                    return BadRequest(new { message = "INICIO DE SESIÓN FALLIDO" });
-                }
+                   var token =  await _usuarioService.IniciarSesion(correo, contrasena); 
+                return Ok(new { token = token });
             }
             catch (Exception ex)
             {

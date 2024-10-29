@@ -1,5 +1,6 @@
 ﻿using Cundi_incidencias.Dto;
 using Cundi_incidencias.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cundi_incidencias.Controllers
@@ -72,6 +73,7 @@ namespace Cundi_incidencias.Controllers
             }
         }
         [HttpGet("ObtenerHistorialIncidencia")]
+        [Authorize]
         public async Task<IActionResult> ObtenerHistorialIncidencia()
         {
             try
