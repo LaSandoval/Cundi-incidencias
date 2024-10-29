@@ -113,6 +113,19 @@ namespace Cundi_incidencias.Controllers
                 return StatusCode(500, "ERROR: " + ex.Message);
             }
         }
+        [HttpGet("ReporteIncidencias")]
+        public async Task<IActionResult> ReportesIncidencias()
+        {
+            string tempFilePath = Path.Combine(Path.GetTempPath(), "Reporte_Incidencias.pdf");
+
+            await _incidenciaService.Reporte();
+
+            var pdfBytes = await System.IO.File.ReadAllBytesAsync(tempFilePath);
+
+            System.IO.File.Delete(tempFilePath);
+
+            return File(pdfBytes, "application/pdf", "Reporte_Incidencias.pdf");
+        }
     }
 }
    
