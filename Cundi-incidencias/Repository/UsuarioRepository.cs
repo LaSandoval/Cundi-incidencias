@@ -100,9 +100,7 @@ namespace Cundi_incidencias.Repository
         {
             UsuarioInDto usuario = null;
             string query = @"SELECT  nombre_usuario, apellido_usuario, correo, contrasena, telefono, direccion, 
-                            id_rol, id_semestre, id_programa
-                     FROM usuario 
-                     WHERE id_usuario = @id_usuario";
+                            id_rol, id_semestre, id_programa FROM usuario  WHERE id_usuario = @id_usuario";
 
             try
             {
@@ -197,7 +195,12 @@ namespace Cundi_incidencias.Repository
         {
             UsuarioInDto usuario = null;
 
-            string query = @"SELECT * FROM usuario WHERE correo = @correo";
+            string query = @"
+    SELECT id_rol, nombre_usuario, apellido_usuario, correo, contrasena, direccion, 
+           telefono, fecha_registro, id_programa, id_semestre 
+    FROM usuario 
+    WHERE correo = @correo";
+            ;
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 await con.OpenAsync();

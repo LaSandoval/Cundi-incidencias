@@ -117,7 +117,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cundi_Incidecnias API", Version = "v1", Description = " <img src='https://i.ibb.co/f8ytCBW/Cundi.png' width='100' height='100' alt='logo'/>\t Podemos observar el API de Cundi_incidencias, esta API se basa en ser un instrumento para crear un aplicativo que permite el reporte de incidencias de insfraestructura, sanidad y seguridad por parte de los estudiantes de la Universidad de Cundinamarca, lo que permitira mejorar la comunicación entre los estudiantes y el eprsonal administrativo para que sean más efcientes las soluciones que se le da a cada una de las incidencias reportadas..", });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cundi_Incidencias API", Version = "v1", Description = " <img src='https://i.ibb.co/f8ytCBW/Cundi.png' width='100' height='100' alt='logo'/>\t Podemos observar el API de Cundi_incidencias, esta API se basa en ser un instrumento para crear un aplicativo que permite el reporte de incidencias de insfraestructura, sanidad y seguridad por parte de los estudiantes de la Universidad de Cundinamarca, lo que permitira mejorar la comunicación entre los estudiantes y el eprsonal administrativo para que sean más efcientes las soluciones que se le da a cada una de las incidencias reportadas..", });
 
     // Añadir definición de seguridad JWT
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

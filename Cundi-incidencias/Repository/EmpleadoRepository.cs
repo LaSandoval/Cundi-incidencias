@@ -1,5 +1,6 @@
 ﻿using Cundi_incidencias.Dto;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace Cundi_incidencias.Repository
 {
@@ -44,10 +45,7 @@ namespace Cundi_incidencias.Repository
         public async Task<int> ActualizarEmpleado(int id_usuario, string direccion, string telefono)
         {
             int filasactualizadas = 0;
-            string query = @"UPDATE usuario 
-                     SET  direccion = @direccion, 
-                         telefono = @telefono 
-                     WHERE id_usuario = @id_usuario";
+            string query = @"UPDATE usuario  SET  direccion = @direccion,   telefono = @telefono   WHERE id_usuario = @id_usuario";
             try
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
@@ -181,31 +179,15 @@ namespace Cundi_incidencias.Repository
  public async Task<List<IncidenciaDto>> TraerIncidenciasAsignadas(int id_usuario)
         {
             List<IncidenciaDto> incidencias = new List<IncidenciaDto>();    
-            string query= @"
-        SELECT i.id_incidencia,
-               i.nombre_incidencia,
-               i.descripcion,
-               i.imagen,
-               i.fecha_inicio,
-               i.fecha_fin,
-               i.id_usuario,
-               i.id_estado,
-               i.id_categoria,
-               i.id_ubicacion,
-               ei.id_empleado
-        FROM [Cundi_Incidencias].[dbo].[empleado_incidencia] ei
-        JOIN [Cundi_Incidencias].[dbo].[incidencia] i 
-            ON ei.id_incidencia = i.id_incidencia
-        WHERE ei.id_usuario = @id_usuario
-          AND i.id_estado = 2;
-    ";
+         //   string query= @" SELECT i.id_incidencia,i.nombre_incidencia, i.descripcion, i.imagen, i.fecha_inicio, i.fecha_fin,i.id_usuario,i.id_estado, i.id_categoria, i.id_ubicacion  ei.id_empleado FROM [Cundi_Incidencias].[dbo].[empleado_incidencia] ei JOIN [Cundi_Incidencias].[dbo].[incidencia] i  ON ei.id_incidencia = i.id_incidencia WHERE ei.id_usuario = @id_usuario AND i.id_estado = 2; ";
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 await con.OpenAsync();
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand("dbo.SEL_INCIDENCIA_ASIGNADA", con))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@id_usuario", id_usuario);
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -219,11 +201,10 @@ namespace Cundi_incidencias.Repository
                                 descripcion = reader.GetString(2),
                                 imagen = reader.GetString(3),
                                 fecha_inicio = reader.GetDateTime(4),
-                                fecha_fin = reader.GetDateTime(5),
-                                id_usuario = reader.GetInt32(6),
-                                id_estado = reader.GetInt32(7),
-                                id_categoria = reader.GetInt32(8),
-                                id_ubicacion = reader.GetInt32(9),
+                                id_usuario = reader.GetInt32(5),
+                                id_estado = reader.GetInt32(6),
+                                id_categoria = reader.GetInt32(7),
+                                id_ubicacion = reader.GetInt32(8),
 
                             };
                             incidencias.Add(incidencia);
@@ -238,14 +219,7 @@ namespace Cundi_incidencias.Repository
         {
             int resultado = 0;
 
-            string query = @"
-        UPDATE incidencia
-        SET descripcion = @descripcion,
-            imagen = @imagen,
-             fecha_fin=@fecha_fin,
-            id_estado = 3
-        WHERE id_incidencia = @id_incidencia;
-    ";
+            string query = @" UPDATE incidencia SET descripcion = @descripcion,  imagen = @imagen, fecha_fin=@fecha_fin, id_estado = 3  WHERE id_incidencia = @id_incidencia; ";
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
