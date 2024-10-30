@@ -226,7 +226,7 @@ namespace Cundi_incidencias.Repository
 
             return incidencias;
         }
-        public async Task<int> ActualizarIncidencia(int id_incidencia, string descripcion, string imagen)
+        public async Task<int> ActualizarIncidencia(int id_incidencia, string descripcion, string imagen, DateTime fecha_fin)
         {
             int resultado = 0;
 
@@ -234,6 +234,7 @@ namespace Cundi_incidencias.Repository
         UPDATE incidencia
         SET descripcion = @descripcion,
             imagen = @imagen,
+             fecha_fin=@fecha_fin,
             id_estado = 3
         WHERE id_incidencia = @id_incidencia;
     ";
@@ -248,6 +249,7 @@ namespace Cundi_incidencias.Repository
                     cmd.Parameters.AddWithValue("@id_incidencia", id_incidencia);
                     cmd.Parameters.AddWithValue("@descripcion", descripcion);
                     cmd.Parameters.AddWithValue("@imagen", imagen);
+                    cmd.Parameters.AddWithValue("@fecha_fin", fecha_fin);
 
                     resultado = await cmd.ExecuteNonQueryAsync();
                 }

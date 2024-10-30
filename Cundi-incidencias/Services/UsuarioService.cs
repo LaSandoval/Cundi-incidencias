@@ -12,10 +12,12 @@ namespace Cundi_incidencias.Services
     public class UsuarioService
     {
         private readonly UsuarioRepository _usuarioRepository;
+        private readonly TokenUtility _tokenUtility;
 
-        public UsuarioService(UsuarioRepository usuarioRepository)
+        public UsuarioService(UsuarioRepository usuarioRepository, TokenUtility tokenUtility)
         {
             _usuarioRepository = usuarioRepository;
+            _tokenUtility = tokenUtility;
         }
         public async Task<UsuarioInDto> RegistroUsuario(UsuarioInDto usuario)
         {
@@ -69,15 +71,16 @@ namespace Cundi_incidencias.Services
             return filaseliminadas;
 
         }
-        public async Task<bool> IniciarSesion(string correo, string contrasena)
+        public async Task<string> IniciarSesion(string correo, string contrasena)
         {
             if(await _usuarioRepository.LoginUsuario(correo, contrasena) == true)
             {
-                return true;
+                var token = _tokenUtility.GenerarToken(correo, contrasena);
+                return token;
             }
             else
             {
-                return false;
+                return "contraseña incorrecta";
             }
             
         }

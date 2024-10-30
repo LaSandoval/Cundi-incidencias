@@ -1,6 +1,7 @@
 ﻿using Cundi_incidencias.Dto;
 using Cundi_incidencias.Repository;
 using Cundi_incidencias.Utility;
+using SPARTANFIT.Utilitys;
 using System.Text;
 
 
@@ -45,6 +46,17 @@ namespace Cundi_incidencias.Services
            int filasEliminadas;
            filasEliminadas= await _incidenciaRepository.EliminarIncidencia(id_incidencia);
             return filasEliminadas;
+        }
+
+        public async Task<string> Reporte()
+        {
+            ReporteUtility reporte = new ReporteUtility();
+            var lista = await ObtenerHistorialIncidencia();
+
+            string tempFilePath = Path.Combine(Path.GetTempPath(), "Reporte_Incidencias.pdf");
+            reporte.CrearPdfDeIncidencias(lista, tempFilePath);
+
+            return tempFilePath;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Cundi_incidencias.Repository
     public class UsuarioRepository
     {
         private readonly string _connectionString;
-        public UsuarioRepository(string connectionString)
+        public UsuarioRepository(string connectionString)   
         {
             _connectionString = connectionString;
         }
@@ -193,9 +193,6 @@ namespace Cundi_incidencias.Repository
                 return false;
             }
         }
-
-
-
         public async Task<UsuarioInDto> ObtenerUsuarioPorCorreo(string correo)
         {
             UsuarioInDto usuario = null;

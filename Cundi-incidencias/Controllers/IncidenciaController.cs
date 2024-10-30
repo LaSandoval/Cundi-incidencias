@@ -1,5 +1,6 @@
 ﻿using Cundi_incidencias.Dto;
 using Cundi_incidencias.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cundi_incidencias.Controllers
@@ -72,6 +73,7 @@ namespace Cundi_incidencias.Controllers
             }
         }
         [HttpGet("ObtenerHistorialIncidencia")]
+        [Authorize]
         public async Task<IActionResult> ObtenerHistorialIncidencia()
         {
             try
@@ -112,6 +114,19 @@ namespace Cundi_incidencias.Controllers
             {
                 return StatusCode(500, "ERROR: " + ex.Message);
             }
+        }
+        [HttpGet("ReporteIncidencias")]
+        public async Task<IActionResult> ReportesIncidencias()
+        {
+            string tempFilePath = Path.Combine(Path.GetTempPath(), "Reporte_Incidencias.pdf");
+
+            await _incidenciaService.Reporte();
+
+            var pdfBytes = await System.IO.File.ReadAllBytesAsync(tempFilePath);
+
+            System.IO.File.Delete(tempFilePath);
+
+            return File(pdfBytes, "application/pdf", "Reporte_Incidencias.pdf");
         }
     }
 }
