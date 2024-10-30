@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System;
 using Cundi_incidencias.Dto;
 
-namespace Cundi_incidecnias.Utility
+namespace Cundi_incidencias.Utility
 {
     public class ReporteUtility : PdfPageEventHelper
     {
