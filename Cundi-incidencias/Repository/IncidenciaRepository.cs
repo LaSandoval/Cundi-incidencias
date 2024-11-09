@@ -81,8 +81,8 @@ namespace Cundi_incidencias.Repository
         public async Task<IncidenciaDto> ObtenerIncidenciaId(int id_incidencia)
         {
             IncidenciaDto incidencia = null;
-            string query = @" SELECT i.nombre_incidencia, i.descripcion, i.imagen, i.fecha_inicio, i.fecha_fin,  i.id_usuario, i.id_estado, e.nombre_estado, i.id_categoria, i.id_ubicacion
-        FROM incidencia i  JOIN estado e ON i.id_estado = e.id_estado  WHERE i.id_incidencia = @id_incidencia";
+            string query = @" SELECT i.nombre_incidencia, i.descripcion, i.imagen, i.fecha_inicio, i.fecha_fin,  i.id_usuario, i.id_estado, e.nombre_estado, i.id_categoria, c.nombre_categoria AS nombre_categoria, i.id_ubicacion,
+            u.nombre_ubicacion AS nombre_ubicacion  FROM incidencia i  JOIN estado e ON i.id_estado = e.id_estado JOIN categoria c ON i.id_categoria= c.id_categoria JOIN ubicacion u ON i.id_ubicacion=u.id_ubicacion  WHERE i.id_incidencia = @id_incidencia";
             ;
 
             using (SqlConnection con = new SqlConnection(_connectionString))
@@ -107,7 +107,10 @@ namespace Cundi_incidencias.Repository
                                 id_estado = reader.GetInt32(6),
                                 nombre_estado = reader.IsDBNull(7) ? null : reader.GetString(7),
                                 id_categoria = reader.GetInt32(8),
-                                id_ubicacion = reader.GetInt32(9)
+                                nombre_categoria = reader.GetString(9),
+                                id_ubicacion = reader.GetInt32(10),
+                                nombre_ubicacion = reader.GetString(11)
+
                             };
                         }
                     }
