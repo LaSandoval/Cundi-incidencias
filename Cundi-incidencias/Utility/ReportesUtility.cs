@@ -35,7 +35,7 @@ namespace Cundi_incidencias.Utility
             BaseColor amarillo = new BaseColor(255, 255, 0); // Amarillo
             BaseColor negro = new BaseColor(0, 0, 0);         // Negro
 
-            string imageUrl = "C:\\Users\\User\\source\\repos\\Cundi-incidencias\\Cundi-incidencias\\Cundi.png";
+            string imageUrl = "C:\\Users\\USER\\Documents\\Software\\Back Git 09-Nov-24\\Cundi-incidencias\\Cundi.png";
             Image gymImage = Image.GetInstance(new Uri(imageUrl));
             gymImage.ScaleToFit(100f, 100f);
             gymImage.Alignment = Element.ALIGN_LEFT;

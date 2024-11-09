@@ -9,16 +9,18 @@ namespace Cundi_incidencias.Controllers
     public class PersonaController : ControllerBase
     {
         private readonly PersonaService _personaService;
+
         public PersonaController(PersonaService personaService)
         {
             _personaService = personaService;
         }
+
         [HttpPost("Login")]
-        public async Task<IActionResult> login([FromForm] string correo, [FromForm] string contrasena)
+        public async Task<IActionResult> Login([FromForm] string correo, [FromForm] string contrasena)
         {
             try
             {
-                if (await _personaService.IniciarSesion(correo, contrasena) == true)
+                if (await _personaService.IniciarSesion(correo, contrasena))
                 {
                     return Ok(new { message = "INICIO DE SESIÓN EXITOSO" });
                 }
@@ -29,9 +31,10 @@ namespace Cundi_incidencias.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "ERROR: " + ex.Message);
+                return StatusCode(500, new { message = "ERROR: " + ex.Message });
             }
         }
+
         [HttpGet("TraerDatosPersona")]
         public async Task<IActionResult> TraerDatos([FromQuery] string correo)
         {
@@ -43,6 +46,7 @@ namespace Cundi_incidencias.Controllers
                 {
                     return NotFound(new { message = "PERSONA NO ENCONTRADA" });
                 }
+
                 return Ok(new
                 {
                     id_usuario1 = persona.id_usuario,
@@ -52,10 +56,8 @@ namespace Cundi_incidencias.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "ERROR: " + ex.Message);
+                return StatusCode(500, new { message = "ERROR: " + ex.Message });
             }
         }
-
     }
 }
-
