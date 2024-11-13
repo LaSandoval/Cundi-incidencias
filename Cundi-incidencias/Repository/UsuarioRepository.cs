@@ -100,9 +100,7 @@ namespace Cundi_incidencias.Repository
         {
             UsuarioInDto usuario = null;
             string query = @"SELECT  nombre_usuario, apellido_usuario, correo, contrasena, telefono, direccion, 
-                            id_rol, id_semestre, id_programa
-                     FROM usuario 
-                     WHERE id_usuario = @id_usuario";
+                            id_rol, id_semestre, id_programa FROM usuario  WHERE id_usuario = @id_usuario";
 
             try
             {
@@ -197,7 +195,12 @@ namespace Cundi_incidencias.Repository
         {
             UsuarioInDto usuario = null;
 
-            string query = @"SELECT * FROM usuario WHERE correo = @correo";
+            string query = @"
+    SELECT id_rol, nombre_usuario, apellido_usuario, correo, contrasena, direccion, 
+           telefono, fecha_registro, id_programa, id_semestre 
+    FROM usuario 
+    WHERE correo = @correo";
+            ;
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 await con.OpenAsync();
@@ -317,8 +320,9 @@ namespace Cundi_incidencias.Repository
         public async Task<List<IncidenciaDto>>MostrarIncidencia(int id_usuario)
         {
             List<IncidenciaDto> incidencias = new List<IncidenciaDto>();
-            string query = @"SELECT i.id_incidencia, i.nombre_incidencia, i.descripcion, i.imagen, i.fecha_inicio, i.fecha_fin, i.id_estado, e.nombre_estado, i.id_categoria, i.id_ubicacion
-        FROM incidencia i JOIN estado e ON i.id_estado = e.id_estado WHERE i.id_usuario = @id_usuario";
+            string query = @"SELECT i.id_incidencia, i.nombre_incidencia, i.descripcion, i.imagen, i.fecha_inicio, i.fecha_fin, i.id_estado, e.nombre_estado, i.id_categoria, 
+            c.nombre_categoria AS nombre_categoria, i.id_ubicacion, u.nombre_ubicacion AS nombre_ubicacion  FROM incidencia i  JOIN estado e ON i.id_estado = e.id_estado JOIN categoria c ON i.id_categoria= c.id_categoria 
+            JOIN ubicacion u ON i.id_ubicacion=u.id_ubicacion  WHERE i.id_usuario = @id_usuario";
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
@@ -340,10 +344,12 @@ namespace Cundi_incidencias.Repository
                                 imagen = reader.GetString(3),
                                 fecha_inicio = reader.GetDateTime(4),
                                 fecha_fin = !reader.IsDBNull(5) ? reader.GetDateTime(5) : (DateTime?)null,
-                            id_estado = reader.GetInt32(6),
+                                id_estado = reader.GetInt32(6),
                                 nombre_estado=reader.GetString(7),
                                 id_categoria = reader.GetInt32(8),
-                                id_ubicacion = reader.GetInt32(9),
+                                nombre_categoria = reader.GetString(9),
+                                id_ubicacion = reader.GetInt32(10),
+                                nombre_ubicacion = reader.GetString(11)
                             };
                             incidencias.Add(incidencia);
                         }

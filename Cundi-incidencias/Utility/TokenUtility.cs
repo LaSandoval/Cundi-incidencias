@@ -15,7 +15,7 @@ namespace Cundi_incidencias.Utility
         }
         public string GenerarToken(string CC, string rol)
         {
-            var SecretKey = "castrobar2024GeNNierAlejoFlorezMateo";
+            var SecretKey = "cundiIncidencias1YuLaVa2005";
             var security = Encoding.ASCII.GetBytes(SecretKey);
 
             IEnumerable<Claim> claims = new Claim[]

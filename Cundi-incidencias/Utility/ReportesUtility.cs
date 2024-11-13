@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System;
 using Cundi_incidencias.Dto;
 
-namespace SPARTANFIT.Utilitys
+namespace Cundi_incidencias.Utility
 {
     public class ReporteUtility : PdfPageEventHelper
     {
