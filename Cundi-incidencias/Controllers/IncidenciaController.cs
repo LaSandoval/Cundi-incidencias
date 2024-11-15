@@ -73,7 +73,7 @@ namespace Cundi_incidencias.Controllers
             }
         }
         [HttpGet("ObtenerHistorialIncidencia")]
-        [Authorize]
+       
         public async Task<IActionResult> ObtenerHistorialIncidencia()
         {
             try
