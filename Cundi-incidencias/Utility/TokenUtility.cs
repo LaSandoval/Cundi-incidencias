@@ -15,7 +15,7 @@ namespace Cundi_incidencias.Utility
         }
         public string GenerarToken(string CC, string rol)
         {
-            var SecretKey = "cundiIncidencias1YuLaVa2005";
+            var SecretKey = "cundiIncidencias1YuLaVa2005Unive";
             var security = Encoding.ASCII.GetBytes(SecretKey);
 
             IEnumerable<Claim> claims = new Claim[]
@@ -27,7 +27,7 @@ namespace Cundi_incidencias.Utility
             var tokenDescriptor = new JwtSecurityToken(
                     claims: claims,
                     notBefore: new DateTimeOffset(DateTime.Now).DateTime,
-                    expires: new DateTimeOffset(DateTime.Now.AddHours(2)).DateTime,
+                    expires: new DateTimeOffset(DateTime.Now.AddDays(3)).DateTime,
                     signingCredentials: new SigningCredentials(new SymmetricSecurityKey(security), SecurityAlgorithms.HmacSha256)
                 );
             //generate token and create

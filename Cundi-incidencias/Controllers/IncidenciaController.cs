@@ -18,6 +18,7 @@ namespace Cundi_incidencias.Controllers
 
 
         [HttpPost("RegistrarIncidencia")]
+        
         public async Task<IActionResult> RegistrarIncidencia([FromBody] IncidenciaDto incidencia)
         {
             try
@@ -33,6 +34,7 @@ namespace Cundi_incidencias.Controllers
         }
 
         [HttpPut("ActualizarInci")]
+        
         public async Task<IActionResult> ActualizarInci([FromForm] int id_incidencia,[FromForm] string nombre_incidencia, [FromForm] string descripcion, [FromForm] string imagen, [FromForm] int id_categoria, [FromForm] int id_ubicacion)
         {
             try
@@ -53,6 +55,7 @@ namespace Cundi_incidencias.Controllers
         }
 
         [HttpGet("ObtenerIncidencia/{id_incidencia}")]
+        
         public async Task<IActionResult> ObtenerIncidencia(int id_incidencia)
         {
             try
@@ -73,7 +76,7 @@ namespace Cundi_incidencias.Controllers
             }
         }
         [HttpGet("ObtenerHistorialIncidencia")]
-        [Authorize]
+        
         public async Task<IActionResult> ObtenerHistorialIncidencia()
         {
             try
@@ -96,6 +99,7 @@ namespace Cundi_incidencias.Controllers
         }
 
         [HttpDelete("EliminarIncidencia")]
+       
         public async Task<IActionResult> EliminarIncidencia([FromQuery] int id_incidencia)
         {
             try
@@ -116,6 +120,7 @@ namespace Cundi_incidencias.Controllers
             }
         }
         [HttpGet("ReporteIncidencias")]
+        
         public async Task<IActionResult> ReportesIncidencias()
         {
             string tempFilePath = Path.Combine(Path.GetTempPath(), "Reporte_Incidencias.pdf");

@@ -45,7 +45,6 @@ builder.Services.AddAuthentication(options =>
             }
             return Task.CompletedTask;
         }
-
     };
 });
 
@@ -111,7 +110,6 @@ builder.Services.AddScoped<EmpleadoService>();
 
 
 // Registro del repositorio de recuperación de contraseña
-
 
 builder.Services.AddEndpointsApiExplorer();
 

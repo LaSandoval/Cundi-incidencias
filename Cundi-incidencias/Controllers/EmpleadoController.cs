@@ -1,5 +1,6 @@
 ﻿using Cundi_incidencias.Dto;
 using Cundi_incidencias.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cundi_incidencias.Controllers
@@ -15,6 +16,7 @@ namespace Cundi_incidencias.Controllers
         }
 
         [HttpPost("CrearEmpleado")]
+        
         public async Task<IActionResult> CrearEmpleado([FromBody] EmpleadoDto empleado)
         {
             try
@@ -29,6 +31,7 @@ namespace Cundi_incidencias.Controllers
             }
         }
         [HttpPost("Actualizar")]
+        
         public async Task<IActionResult> ActualizarEmpleado([FromForm] int id_usuario, [FromForm] string direccion, [FromForm] string telefono)
         {
             try
@@ -42,6 +45,7 @@ namespace Cundi_incidencias.Controllers
             }
         }
         [HttpDelete("Eliminar")]
+        
         public async Task<IActionResult> EliminarUsuario([FromForm] int id_usuario)
         {
             try
@@ -55,6 +59,7 @@ namespace Cundi_incidencias.Controllers
             }
         }
         [HttpGet("ListaEmpleados")]
+        
         public async Task<IActionResult> MostrarEmpleados()
         {
             List<EmpleadoDto> listEmpleados = new List<EmpleadoDto>();
@@ -67,6 +72,7 @@ namespace Cundi_incidencias.Controllers
         }
 
         [HttpPost("Asignar")]
+        
         public async Task<IActionResult> Asignar([FromForm] int id_usuario, [FromForm] int id_incidencia)
         {
             try
@@ -87,6 +93,7 @@ namespace Cundi_incidencias.Controllers
             }
         }
         [HttpGet("ObtenerIncidenciasAsignadas")]
+        
         public async Task<IActionResult> MostrarIncidencias(int id_usuario)
         {
             List<IncidenciaDto> listIncidencias = new List<IncidenciaDto>();
@@ -98,6 +105,7 @@ namespace Cundi_incidencias.Controllers
             return Ok(listIncidencias);
         }
         [HttpPost("ActualizarInci")]
+        
         public async Task<IActionResult> ActualizarInci([FromForm] int id_incidencia, [FromForm] string descripcion, [FromForm] string imagen)
         {
             try

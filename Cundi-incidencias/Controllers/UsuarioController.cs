@@ -1,5 +1,6 @@
 ﻿using Cundi_incidencias.Dto;
 using Cundi_incidencias.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cundi_incidencias.Controllers
@@ -16,6 +17,7 @@ namespace Cundi_incidencias.Controllers
         }
 
         [HttpPost("Registrar")]
+        
         public async Task<IActionResult> RegistrarUsuario([FromBody] UsuarioInDto usuario)
         {
             try
@@ -36,6 +38,7 @@ namespace Cundi_incidencias.Controllers
             }
         }
         [HttpGet("ActualizarCuenta")]
+        
         public async Task<IActionResult> ActualizarCuenta([FromQuery] int token)
         {
             try
@@ -57,7 +60,7 @@ namespace Cundi_incidencias.Controllers
 
 
         [HttpPost("Login")]
-        [ValidarCorreo]
+        
         public async Task<IActionResult> login([FromForm] string correo, [FromForm] string contrasena)
         {
             try
@@ -73,6 +76,7 @@ namespace Cundi_incidencias.Controllers
 
         [HttpPost("Actualizar")]
         [ValidarCorreo]
+        
         public async Task<IActionResult> ActualizarUsuario([FromForm] string correo, [FromForm] int programa,
         [FromForm] int semestre, [FromForm] string direccion, [FromForm] string telefono)
         {
@@ -95,6 +99,7 @@ namespace Cundi_incidencias.Controllers
 
         [HttpDelete("Eliminar")]
         [ValidarCorreo]
+        
         public async Task<IActionResult> EliminarUsuario([FromQuery] int id_usuario)
         {
             try
@@ -112,6 +117,7 @@ namespace Cundi_incidencias.Controllers
     
 
         [HttpGet("Traer-Datos-Usuario")]
+        
         public async Task<IActionResult> ObtenerDatosPersona([FromQuery] int id_usuario)
         {
             var usuario = await _usuarioService.EnviarDatosUsu(id_usuario);
@@ -137,6 +143,7 @@ namespace Cundi_incidencias.Controllers
             });
         }
         [HttpGet("ListaIncidenciaUsuario")]
+        
         public async Task<IActionResult> MostrarIncidencias(int id_usuario)
         {
             List<IncidenciaDto> listIncidencias = new List<IncidenciaDto>();

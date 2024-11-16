@@ -1,5 +1,6 @@
 ﻿using Cundi_incidencias.Dto;
 using Cundi_incidencias.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cundi_incidencias.Controllers
@@ -17,6 +18,7 @@ namespace Cundi_incidencias.Controllers
 
 
         [HttpPost("EnviarCodigo")]
+        
         public async Task<IActionResult> EnviarCodigo([FromForm] string correo)
         {
             try
@@ -31,6 +33,7 @@ namespace Cundi_incidencias.Controllers
             }
         }
         [HttpPost("ActualizarContrasena")]
+        
         public async Task<IActionResult> ActualizarContrasena( [FromForm] int token ,[FromQuery] string nuevaContrasena)
         {
             try
