@@ -1,7 +1,6 @@
 ﻿using Cundi_incidencias.Dto;
 using Cundi_incidencias.Repository;
 using Cundi_incidencias.Utility;
-using System.Text;
 
 namespace Cundi_incidencias.Services
 {
@@ -13,14 +12,9 @@ namespace Cundi_incidencias.Services
         {
             _personaRepository = personaRepository;
         }
-
-        public async Task<bool> IniciarSesion(string correo, string contrasenaEnBinario)
+        public async Task<bool> IniciarSesion(string correo, string contrasena)
         {
-            // Convertir la contraseña de binario a texto plano
-            string contrasenaTextoPlano = BinaryToString(contrasenaEnBinario);
-
-            // Encriptar la contraseña y verificar con la almacenada (bcrypt)
-            if (await _personaRepository.LoginUsuario(correo, contrasenaTextoPlano))
+            if (await _personaRepository.LoginUsuario(correo, contrasena) == true)
             {
                 return true;
             }
@@ -28,20 +22,14 @@ namespace Cundi_incidencias.Services
             {
                 return false;
             }
-        }
 
-        public async Task<PersonaDto> TraerDatosPersona(string correo)
-        {
-            return await _personaRepository.TraerDatosPersona(correo);
-        }
 
-        // Método para convertir de binario a texto plano
-        private string BinaryToString(string binary)
+        }
+        public async Task <PersonaDto> TraerDatosPersona(string correo)
         {
-            var text = binary.Split(' ')
-                             .Select(bin => Convert.ToChar(Convert.ToInt32(bin, 2)))
-                             .ToArray();
-            return new string(text);
+            PersonaDto persona=new PersonaDto();
+            persona=await _personaRepository.TraerDatosPersona(correo);
+            return persona;
         }
     }
 }

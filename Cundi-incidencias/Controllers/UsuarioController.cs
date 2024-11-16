@@ -1,18 +1,15 @@
 ﻿using Cundi_incidencias.Dto;
 using Cundi_incidencias.Services;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Cundi_incidencias.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class UsuarioController : ControllerBase
     {
         private readonly UsuarioService _usuarioService;
-
         public UsuarioController(UsuarioService usuarioService)
         {
             _usuarioService = usuarioService;
@@ -23,7 +20,7 @@ namespace Cundi_incidencias.Controllers
         {
             try
             {
-                if (!await _usuarioService.BuscarPersona(usuario.persona.correo))
+                if (await _usuarioService.BuscarPersona(usuario.persona.correo) == false)
                 {
                     await _usuarioService.RegistroUsuario(usuario);
                     return Ok(new { mensaje = "USUARIO REGISTRADO EXITOSAMENTE" });
@@ -38,18 +35,12 @@ namespace Cundi_incidencias.Controllers
                 return StatusCode(500, "ERROR: " + ex.Message);
             }
         }
-
         [HttpGet("ActualizarCuenta")]
-        public async Task<IActionResult> ActualizarCuenta([FromQuery] int? token)
+        public async Task<IActionResult> ActualizarCuenta([FromQuery] int token)
         {
             try
             {
-                if (!token.HasValue)
-                {
-                    return BadRequest("El token es requerido.");
-                }
-
-                if (await _usuarioService.ActivarCuenta(token.Value) != 0)
+                if (await _usuarioService.ActivarCuenta(token) != 0)
                 {
                     return Redirect("http://localhost:5173/");
                 }
@@ -64,13 +55,14 @@ namespace Cundi_incidencias.Controllers
             }
         }
 
+
         [HttpPost("Login")]
         [ValidarCorreo]
-        public async Task<IActionResult> Login([FromForm] string correo, [FromForm] string contrasena)
+        public async Task<IActionResult> login([FromForm] string correo, [FromForm] string contrasena)
         {
             try
             {
-                var token = await _usuarioService.IniciarSesion(correo, contrasena);
+                   var token =  await _usuarioService.IniciarSesion(correo, contrasena); 
                 return Ok(new { token = token });
             }
             catch (Exception ex)
@@ -92,7 +84,7 @@ namespace Cundi_incidencias.Controllers
                 }
                 else
                 {
-                    return BadRequest(new { message = "ERROR" });
+                    return BadRequest(new { message = "ERROR" }); ;
                 }
             }
             catch (Exception ex)
@@ -110,12 +102,14 @@ namespace Cundi_incidencias.Controllers
                 string descripcion = $"Eliminar al usuario {id_usuario}";
                 await _usuarioService.EliminarUsuario(id_usuario, descripcion);
                 return Ok(new { mensaje = "USUARIO ELIMINADO EXITOSAMENTE" });
-            }
+                    }
+
             catch (Exception ex)
             {
                 return StatusCode(500, "ERROR: " + ex.Message);
             }
         }
+    
 
         [HttpGet("Traer-Datos-Usuario")]
         public async Task<IActionResult> ObtenerDatosPersona([FromQuery] int id_usuario)
@@ -142,18 +136,17 @@ namespace Cundi_incidencias.Controllers
                 id_semestre = usuario.id_semestre
             });
         }
-
         [HttpGet("ListaIncidenciaUsuario")]
-        public async Task<IActionResult> MostrarIncidencias([FromQuery] int id_usuario)
+        public async Task<IActionResult> MostrarIncidencias(int id_usuario)
         {
-            var listIncidencias = await _usuarioService.MostrarIncidencia(id_usuario);
-
-            if (listIncidencias == null || listIncidencias.Count == 0)
+            List<IncidenciaDto> listIncidencias = new List<IncidenciaDto>();
+            listIncidencias = await _usuarioService.MostrarIncidencia(id_usuario);
+            if (listIncidencias.Count == 0)
             {
                 return NotFound("NO HAY INCIDENCIAS REGISTRADAS");
             }
-
             return Ok(listIncidencias);
         }
+
     }
 }
